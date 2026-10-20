@@ -75,17 +75,26 @@ function App() {
                   <strong>₹{product.otherPrice}</strong>
                 </div>
 
-                <div className="result">
-                  {product.gemPrice < product.otherPrice
+                            
+              <div className="result">
+                {product.gemPrice === product.otherPrice
+                  ? 'Both prices are equal'
+                  : product.gemPrice < product.otherPrice
                     ? `GeM is cheaper by ₹${
                         product.otherPrice - product.gemPrice
-                      }`
-                    : product.gemPrice > product.otherPrice
-                      ? `Other marketplace is cheaper by ₹${
-                          product.gemPrice - product.otherPrice
-                        }`
-                      : 'Both prices are equal'}
-                </div>
+                      } (${(
+                        ((product.otherPrice - product.gemPrice) /
+                          product.otherPrice) *
+                        100
+                      ).toFixed(1)}%)`
+                    : `Other marketplace is cheaper by ₹${
+                        product.gemPrice - product.otherPrice
+                      } (${(
+                        ((product.gemPrice - product.otherPrice) /
+                          product.gemPrice) *
+                        100
+                      ).toFixed(1)}%)`}
+              </div>
               </div>
             ))}
 
