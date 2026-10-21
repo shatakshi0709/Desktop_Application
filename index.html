@@ -4,10 +4,1042 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Expense Tracker</title>
+  <title>Expense Tracker | Dashboard</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #6c63ff;
+      --bg: #f6f7fb;
+      --text: #20243a;
+      --muted: #9297aa;
+      --border: #eceef5;
+      --green: #16a878;
+      --red: #ed6575;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+
+    .sidebar {
+      width: 235px;
+      flex-shrink: 0;
+      background: #20223a;
+      color: #fff;
+      padding: 30px 18px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 8px 45px;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      background: var(--primary);
+      border-radius: 13px;
+      font-size: 23px;
+    }
+
+    .brand h2 {
+      font-size: 17px;
+      letter-spacing: -0.5px;
+    }
+
+    .brand small {
+      display: block;
+      color: #a4a7c1;
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    .nav-label {
+      color: #8589a8;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      margin: 0 12px 14px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 14px 13px;
+      margin-bottom: 7px;
+      border-radius: 10px;
+      color: #b9bbd0;
+      font-size: 13px;
+    }
+
+    .nav-item.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .nav-item .nav-icon {
+      width: 19px;
+      text-align: center;
+      font-size: 17px;
+    }
+
+    .sidebar-bottom {
+      margin-top: auto;
+      padding: 17px 12px 0;
+      border-top: 1px solid #393b52;
+      color: #b9bbd0;
+      font-size: 12px;
+      line-height: 1.8;
+    }
+
+    /* Main content */
+
+    .main {
+      flex: 1;
+      min-width: 0;
+      padding: 32px 36px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 32px;
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .topbar h1 {
+      font-size: 27px;
+      letter-spacing: -1px;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .date-label {
+      color: #777d92;
+      font-size: 12px;
+      text-align: right;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #e6e3ff;
+      color: #5e56e8;
+      font-weight: 700;
+    }
+
+    .primary-btn {
+      border: none;
+      border-radius: 10px;
+      padding: 13px 17px;
+      background: var(--primary);
+      color: white;
+      font-size: 12px;
+      font-weight: 650;
+      box-shadow: 0 6px 16px #6c63ff2b;
+    }
+
+    .primary-btn:hover {
+      background: #5950ed;
+    }
+
+    /* Summary cards */
+
+    .section-heading {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 17px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 29px;
+    }
+
+    .summary-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+      min-width: 0;
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .card-label {
+      color: #81869b;
+      font-size: 12px;
+    }
+
+    .card-icon {
+      width: 39px;
+      height: 39px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      font-size: 20px;
+    }
+
+    .purple { background: #efedff; }
+    .green { background: #e4f8ef; }
+    .pink { background: #ffedf0; }
+
+    .amount {
+      font-size: clamp(20px, 2.2vw, 28px);
+      font-weight: 750;
+      letter-spacing: -1px;
+      overflow-wrap: anywhere;
+    }
+
+    .card-note {
+      color: #969bad;
+      font-size: 11px;
+      margin-top: 10px;
+    }
+
+    .positive { color: var(--green); }
+    .negative { color: var(--red); }
+
+    /* Dashboard panels */
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(250px, 1fr);
+      gap: 20px;
+      margin-bottom: 27px;
+    }
+
+    .panel {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 23px;
+      min-width: 0;
+    }
+
+    .panel-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .panel-heading h3 {
+      font-size: 14px;
+    }
+
+    .panel-heading p {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 7px;
+    }
+
+    .period-select {
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: white;
+      color: #626880;
+      font-size: 11px;
+    }
+
+    .chart-legend {
+      display: flex;
+      gap: 15px;
+      font-size: 11px;
+      color: #85899b;
+      margin-bottom: 20px;
+    }
+
+    .legend-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+
+    .chart {
+      height: 190px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 46px,
+        #f0f1f7 47px,
+        transparent 48px
+      );
+    }
+
+    .bar-group {
+      height: 100%;
+      flex: 1;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 5px;
+      position: relative;
+    }
+
+    .bar {
+      width: min(22px, 40%);
+      border-radius: 5px 5px 0 0;
+      min-height: 4px;
+    }
+
+    .income-bar { background: #b7b1ff; }
+    .expense-bar { background: var(--primary); }
+
+    .chart-months {
+      display: flex;
+      justify-content: space-around;
+      gap: 12px;
+      margin-top: 12px;
+      color: #969bad;
+      font-size: 10px;
+    }
+
+    /* Spending breakdown */
+
+    .spending-total {
+      font-size: 27px;
+      font-weight: 750;
+      margin: 8px 0 22px;
+    }
+
+    .spending-total small {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    .category {
+      margin-bottom: 20px;
+    }
+
+    .category-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 11px;
+      margin-bottom: 9px;
+    }
+
+    .category-top span:last-child {
+      color: #777d92;
+    }
+
+    .progress {
+      height: 7px;
+      background: #f0f1f7;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 10px;
+    }
+
+    /* Transactions */
+
+    .transactions-panel {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .transactions-header {
+      padding: 22px 23px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .transactions-header h3 {
+      font-size: 14px;
+    }
+
+    .transactions-header p {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .search {
+      width: 200px;
+      max-width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      outline: none;
+      font-size: 11px;
+    }
+
+    .search:focus, input:focus, select:focus {
+      border-color: var(--primary);
+      outline: 2px solid #6c63ff20;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    thead {
+      background: #fafaff;
+    }
+
+    th {
+      padding: 13px 23px;
+      color: #969bad;
+      font-size: 10px;
+      font-weight: 650;
+    }
+
+    td {
+      padding: 16px 23px;
+      border-top: 1px solid #f0f1f7;
+      font-size: 11px;
+    }
+
+    .transaction-name {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-weight: 650;
+    }
+
+    .transaction-icon {
+      width: 35px;
+      height: 35px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      font-size: 17px;
+    }
+
+    .transaction-sub {
+      color: #969bad;
+      font-size: 10px;
+      margin-top: 4px;
+    }
+
+    .tag {
+      display: inline-block;
+      background: #f0efff;
+      color: #6c63d9;
+      border-radius: 6px;
+      padding: 6px 9px;
+      font-size: 10px;
+    }
+
+    .view-all {
+      display: block;
+      width: 100%;
+      border: none;
+      border-top: 1px solid var(--border);
+      background: white;
+      padding: 16px;
+      color: var(--primary);
+      font-size: 11px;
+      font-weight: 650;
+    }
+
+    /* Add expense modal */
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: #17182b80;
+    }
+
+    .modal.open {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      width: 100%;
+      max-width: 430px;
+      padding: 27px;
+      border-radius: 18px;
+      box-shadow: 0 20px 70px #0002;
+    }
+
+    .modal-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+    }
+
+    .modal-heading h2 {
+      font-size: 19px;
+    }
+
+    .close-btn {
+      border: none;
+      background: #f0f1f7;
+      border-radius: 8px;
+      width: 32px;
+      height: 32px;
+      font-size: 19px;
+    }
+
+    .form-group {
+      margin-bottom: 17px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: white;
+      font-size: 13px;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .secondary-btn {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: white;
+    }
+
+    .form-actions .primary-btn {
+      flex: 1;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: var(--muted);
+      padding: 25px;
+    }
+
+    @media (max-width: 1050px) {
+      .sidebar { width: 190px; }
+      .main { padding: 25px 22px; }
+      .dashboard-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 720px) {
+      .sidebar { width: 66px; padding: 22px 8px; }
+      .brand { margin: 0 auto 35px; }
+      .brand-copy, .nav-label, .nav-text, .sidebar-bottom { display: none; }
+      .nav-item { justify-content: center; padding: 14px 0; }
+      .main { padding: 22px 13px; }
+      .summary-grid { grid-template-columns: 1fr; gap: 12px; }
+      .topbar { align-items: flex-start; flex-wrap: wrap; }
+      .topbar h1 { font-size: 23px; }
+      .topbar-right { gap: 8px; }
+      .date-label { display: none; }
+      .transactions-header { align-items: flex-start; flex-direction: column; }
+      .search { width: 100%; }
+      .panel { padding: 17px; }
+    }
+  </style>
 </head>
+
 <body>
-  <h1>My Expense Tracker</h1>
-  <p>Welcome to your desktop application!</p>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">₹</div>
+        <div class="brand-copy">
+          <h2>SpendWise</h2>
+          <small>Personal Finance</small>
+        </div>
+      </div>
+
+      <div class="nav-label">WORKSPACE</div>
+
+      <div class="nav-item active">
+        <span class="nav-icon">▦</span>
+        <span class="nav-text">Dashboard</span>
+      </div>
+
+      <div class="nav-item">
+        <span class="nav-icon">↕</span>
+        <span class="nav-text">Transactions</span>
+      </div>
+
+      <div class="nav-item">
+        <span class="nav-icon">▤</span>
+        <span class="nav-text">Reports</span>
+      </div>
+
+      <div class="nav-item">
+        <span class="nav-icon">⚙</span>
+        <span class="nav-text">Settings</span>
+      </div>
+
+      <div class="sidebar-bottom">
+        <div>PERSONAL WORKSPACE</div>
+        <div>Local expense manager</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <div class="eyebrow">YOUR FINANCES AT A GLANCE</div>
+          <h1>Dashboard</h1>
+        </div>
+
+        <div class="topbar-right">
+          <div class="date-label" id="todayLabel"></div>
+          <div class="avatar">S</div>
+          <button class="primary-btn" id="openModalBtn">
+            + Add Expense
+          </button>
+        </div>
+      </header>
+
+      <h2 class="section-heading">Financial Overview</h2>
+
+      <section class="summary-grid">
+        <div class="summary-card">
+          <div class="card-top">
+            <span class="card-label">Total Balance</span>
+            <span class="card-icon purple">₹</span>
+          </div>
+          <div class="amount" id="balanceAmount">₹24,850.00</div>
+          <div class="card-note">Your current net balance</div>
+        </div>
+
+        <div class="summary-card">
+          <div class="card-top">
+            <span class="card-label">Total Income</span>
+            <span class="card-icon green">↙</span>
+          </div>
+          <div class="amount" id="incomeAmount">₹32,000.00</div>
+          <div class="card-note"><span class="positive">Income</span> recorded in this demo</div>
+        </div>
+
+        <div class="summary-card">
+          <div class="card-top">
+            <span class="card-label">Total Expenses</span>
+            <span class="card-icon pink">↗</span>
+          </div>
+          <div class="amount" id="expenseAmount">₹7,150.00</div>
+          <div class="card-note"><span class="negative">Spending</span> recorded in this demo</div>
+        </div>
+      </section>
+
+      <section class="dashboard-grid">
+        <div class="panel">
+          <div class="panel-heading">
+            <div>
+              <h3>Income vs Expenses</h3>
+              <p>Your monthly financial activity</p>
+            </div>
+            <select class="period-select" id="chartPeriod">
+              <option value="6">Last 6 months</option>
+              <option value="3">Last 3 months</option>
+            </select>
+          </div>
+
+          <div class="chart-legend">
+            <span><span class="legend-dot" style="background:#b7b1ff"></span>Income</span>
+            <span><span class="legend-dot" style="background:#6c63ff"></span>Expenses</span>
+          </div>
+
+          <div class="chart" id="chartBars">
+            <div class="bar-group"><div class="bar income-bar" style="height:55%"></div><div class="bar expense-bar" style="height:30%"></div></div>
+            <div class="bar-group"><div class="bar income-bar" style="height:75%"></div><div class="bar expense-bar" style="height:42%"></div></div>
+            <div class="bar-group"><div class="bar income-bar" style="height:63%"></div><div class="bar expense-bar" style="height:35%"></div></div>
+            <div class="bar-group"><div class="bar income-bar" style="height:85%"></div><div class="bar expense-bar" style="height:48%"></div></div>
+            <div class="bar-group"><div class="bar income-bar" style="height:70%"></div><div class="bar expense-bar" style="height:40%"></div></div>
+            <div class="bar-group"><div class="bar income-bar" style="height:95%"></div><div class="bar expense-bar" style="height:52%"></div></div>
+          </div>
+
+          <div class="chart-months" id="chartMonths">
+            <span>May</span><span>Jun</span><span>Jul</span>
+            <span>Aug</span><span>Sep</span><span>Oct</span>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-heading">
+            <div>
+              <h3>Spending Breakdown</h3>
+              <p>Expenses by category</p>
+            </div>
+            <span>◉</span>
+          </div>
+
+          <div class="spending-total" id="monthlySpending">₹7,150 <small>this month</small></div>
+
+          <div class="category">
+            <div class="category-top"><span>🍔 Food & Dining</span><span>₹2,500</span></div>
+            <div class="progress"><div class="progress-fill" style="width:70%;background:#6c63ff"></div></div>
+          </div>
+
+          <div class="category">
+            <div class="category-top"><span>🚗 Transport</span><span>₹1,500</span></div>
+            <div class="progress"><div class="progress-fill" style="width:43%;background:#38b99b"></div></div>
+          </div>
+
+          <div class="category">
+            <div class="category-top"><span>🛍️ Shopping</span><span>₹1,800</span></div>
+            <div class="progress"><div class="progress-fill" style="width:52%;background:#ffad66"></div></div>
+          </div>
+
+          <div class="category">
+            <div class="category-top"><span>📚 Education</span><span>₹1,350</span></div>
+            <div class="progress"><div class="progress-fill" style="width:38%;background:#ed7895"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="transactions-panel">
+        <div class="transactions-header">
+          <div>
+            <h3>Recent Transactions</h3>
+            <p>Your latest income and expenses</p>
+          </div>
+          <input
+            class="search"
+            type="search"
+            id="searchInput"
+            placeholder="⌕  Search transactions..."
+          >
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>TRANSACTION</th>
+                <th>CATEGORY</th>
+                <th>DATE</th>
+                <th>AMOUNT</th>
+              </tr>
+            </thead>
+            <tbody id="transactionRows"></tbody>
+          </table>
+        </div>
+
+        <button class="view-all" id="viewAllBtn">View all transactions ↓</button>
+      </section>
+    </main>
+  </div>
+
+  <!-- Add expense form -->
+  <div class="modal" id="expenseModal">
+    <div class="modal-content">
+      <div class="modal-heading">
+        <h2>Add a transaction</h2>
+        <button class="close-btn" id="closeModalBtn" aria-label="Close">×</button>
+      </div>
+
+      <form id="expenseForm">
+        <div class="form-group">
+          <label for="title">Transaction title</label>
+          <input id="title" name="title" placeholder="e.g. Lunch" required maxlength="60">
+        </div>
+
+        <div class="form-group">
+          <label for="amount">Amount (₹)</label>
+          <input id="amount" name="amount" type="number" min="0.01" step="0.01" placeholder="e.g. 250" required>
+        </div>
+
+        <div class="form-group">
+          <label for="category">Category</label>
+          <select id="category" name="category" required>
+            <option value="Food">Food & Dining</option>
+            <option value="Transport">Transport</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Education">Education</option>
+            <option value="Bills">Bills</option>
+            <option value="Health">Health</option>
+            <option value="Other">Other</option>
+            <option value="Income">Income</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="date">Date</label>
+          <input id="date" name="date" type="date" required>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="secondary-btn" id="cancelBtn">Cancel</button>
+          <button type="submit" class="primary-btn">Add transaction</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Demo data only: this is not saved to a file yet.
+    const transactions = [
+      { title: "Grocery Shopping", category: "Food", date: "2026-10-21", amount: 2500 },
+      { title: "Monthly Bus Pass", category: "Transport", date: "2026-10-19", amount: 1500 },
+      { title: "New Headphones", category: "Shopping", date: "2026-10-17", amount: 1800 },
+      { title: "Online Course", category: "Education", date: "2026-10-15", amount: 1350 }
+    ];
+
+    const categoryIcons = {
+      Food: "🍔",
+      Transport: "🚗",
+      Shopping: "🛍️",
+      Education: "📚",
+      Bills: "🧾",
+      Health: "💊",
+      Other: "📌",
+      Income: "💰"
+    };
+
+    const $ = (selector) => document.querySelector(selector);
+
+    function formatMoney(amount) {
+      return new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        minimumFractionDigits: 2
+      }).format(amount);
+    }
+
+    function formatDate(dateString) {
+      return new Date(dateString + "T12:00:00").toLocaleDateString(
+        "en-IN",
+        { day: "numeric", month: "short", year: "numeric" }
+      );
+    }
+
+    function renderTransactions() {
+      const searchTerm = $("#searchInput").value.toLowerCase().trim();
+
+      const filtered = transactions.filter((item) =>
+        item.title.toLowerCase().includes(searchTerm) ||
+        item.category.toLowerCase().includes(searchTerm)
+      );
+
+      $("#transactionRows").innerHTML = "";
+
+      if (filtered.length === 0) {
+        $("#transactionRows").innerHTML =
+          '<tr><td colspan="4" class="empty-state">No matching transactions found.</td></tr>';
+        return;
+      }
+
+      filtered.forEach((item) => {
+        const isIncome = item.category === "Income";
+        const row = document.createElement("tr");
+
+        const nameCell = document.createElement("td");
+        const nameWrap = document.createElement("div");
+        nameWrap.className = "transaction-name";
+
+        const icon = document.createElement("span");
+        icon.className = "transaction-icon " + (isIncome ? "green" : "purple");
+        icon.textContent = categoryIcons[item.category] || "📌";
+
+        const details = document.createElement("div");
+        const title = document.createElement("div");
+        title.textContent = item.title;
+
+        const sub = document.createElement("div");
+        sub.className = "transaction-sub";
+        sub.textContent = isIncome ? "Money received" : "Money spent";
+
+        details.append(title, sub);
+        nameWrap.append(icon, details);
+        nameCell.append(nameWrap);
+
+        const categoryCell = document.createElement("td");
+        const tag = document.createElement("span");
+        tag.className = "tag";
+        tag.textContent = item.category;
+        categoryCell.append(tag);
+
+        const dateCell = document.createElement("td");
+        dateCell.textContent = formatDate(item.date);
+
+        const amountCell = document.createElement("td");
+        amountCell.className = isIncome ? "positive" : "negative";
+        amountCell.style.fontWeight = "700";
+        amountCell.textContent = (isIncome ? "+" : "−") + formatMoney(item.amount);
+
+        row.append(nameCell, categoryCell, dateCell, amountCell);
+        $("#transactionRows").append(row);
+      });
+    }
+
+    function updateSummary() {
+      const income = transactions
+        .filter((item) => item.category === "Income")
+        .reduce((total, item) => total + item.amount, 32000);
+
+      const expenses = transactions
+        .filter((item) => item.category !== "Income")
+        .reduce((total, item) => total + item.amount, 0);
+
+      $("#incomeAmount").textContent = formatMoney(income);
+      $("#expenseAmount").textContent = formatMoney(expenses);
+      $("#balanceAmount").textContent = formatMoney(income - expenses);
+    }
+
+    function openModal() {
+      $("#expenseModal").classList.add("open");
+    }
+
+    function closeModal() {
+      $("#expenseModal").classList.remove("open");
+    }
+
+    const today = new Date();
+    const todayISO = [
+      today.getFullYear(),
+      String(today.getMonth() + 1).padStart(2, "0"),
+      String(today.getDate()).padStart(2, "0")
+    ].join("-");
+
+    $("#todayLabel").textContent = today.toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric"
+    });
+
+    $("#date").value = todayISO;
+
+    $("#openModalBtn").addEventListener("click", openModal);
+    $("#closeModalBtn").addEventListener("click", closeModal);
+    $("#cancelBtn").addEventListener("click", closeModal);
+    $("#searchInput").addEventListener("input", renderTransactions);
+
+    $("#expenseModal").addEventListener("click", (event) => {
+      if (event.target === $("#expenseModal")) closeModal();
+    });
+
+    $("#expenseForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const title = $("#title").value.trim();
+      const amount = Number($("#amount").value);
+      const category = $("#category").value;
+      const date = $("#date").value;
+
+      if (!title || !Number.isFinite(amount) || amount <= 0 || !date) {
+        alert("Please enter a valid title, amount, and date.");
+        return;
+      }
+
+      transactions.unshift({ title, amount, category, date });
+
+      renderTransactions();
+      updateSummary();
+      $("#expenseForm").reset();
+      $("#date").value = todayISO;
+      closeModal();
+    });
+
+    $("#viewAllBtn").addEventListener("click", () => {
+      $("#searchInput").value = "";
+      renderTransactions();
+      $("#searchInput").focus();
+    });
+
+    $("#chartPeriod").addEventListener("change", (event) => {
+      const count = Number(event.target.value);
+      const bars = [...$("#chartBars").children];
+      const months = [...$("#chartMonths").children];
+
+      bars.forEach((bar, index) => {
+        bar.style.display = index >= bars.length - count ? "flex" : "none";
+        months[index].style.display = index >= months.length - count ? "inline" : "none";
+      });
+    });
+
+    renderTransactions();
+    updateSummary();
+  </script>
 </body>
 </html>
