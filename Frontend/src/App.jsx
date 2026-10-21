@@ -4,6 +4,7 @@ import './App.css'
 
 function App() {
   const [search, setSearch] = useState('')
+  const [category, setCategory] = useState('All')
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -28,10 +29,18 @@ function App() {
       })
   }, [])
 
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(search.toLowerCase())
-  )
 
+
+const filteredProducts = products.filter((product) => {
+  const matchesSearch = product.name
+    .toLowerCase()
+    .includes(search.toLowerCase())
+
+  const matchesCategory =
+    category === 'All' || product.category === category
+
+  return matchesSearch && matchesCategory
+})
   return (
     <div className="app">
       <header className="header">
@@ -52,6 +61,20 @@ function App() {
           value={search}
           onChange={(event) => setSearch(event.target.value)}
         />
+
+        <select
+          value={category}
+          onChange={(event) => setCategory(event.target.value)}
+        >
+          <option value="All">All Categories</option>
+          <option value="Computer Accessories">
+            Computer Accessories
+          </option>
+          <option value="Office Furniture">
+            Office Furniture
+          </option>
+        </select> 
+
 
         {loading && <p>Loading products...</p>}
 
