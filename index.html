@@ -859,12 +859,15 @@
 
   <script>
     // Demo data only: this is not saved to a file yet.
-    const transactions = [
-      { title: "Grocery Shopping", category: "Food", date: "2026-10-21", amount: 2500 },
-      { title: "Monthly Bus Pass", category: "Transport", date: "2026-10-19", amount: 1500 },
-      { title: "New Headphones", category: "Shopping", date: "2026-10-17", amount: 1800 },
-      { title: "Online Course", category: "Education", date: "2026-10-15", amount: 1350 }
-    ];
+// Transactions will be loaded from the JSON file.
+let transactions = [];
+
+const demoTransactions = [
+  { title: "Grocery Shopping", category: "Food", date: "2026-10-21", amount: 2500 },
+  { title: "Monthly Bus Pass", category: "Transport", date: "2026-10-19", amount: 1500 },
+  { title: "New Headphones", category: "Shopping", date: "2026-10-17", amount: 1800 },
+  { title: "Online Course", category: "Education", date: "2026-10-15", amount: 1350 }
+];
 
     const categoryIcons = {
       Food: "🍔",
@@ -999,27 +1002,48 @@
       if (event.target === $("#expenseModal")) closeModal();
     });
 
-    $("#expenseForm").addEventListener("submit", (event) => {
-      event.preventDefault();
 
-      const title = $("#title").value.trim();
-      const amount = Number($("#amount").value);
-      const category = $("#category").value;
-      const date = $("#date").value;
+$("#expenseForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
 
-      if (!title || !Number.isFinite(amount) || amount <= 0 || !date) {
-        alert("Please enter a valid title, amount, and date.");
-        return;
-      }
+  const title = $("#title").value.trim();
+  const amount = Number($("#amount").value);
+  const category = $("#category").value;
+  const date = $("#date").value;
 
-      transactions.unshift({ title, amount, category, date });
+  if (!title || !Number.isFinite(amount) || amount <= 0 || !date) {
+    alert("Please enter a valid title, amount, and date.");
+    return;
+  }
 
-      renderTransactions();
-      updateSummary();
-      $("#expenseForm").reset();
-      $("#date").value = todayISO;
-      closeModal();
-    });
+  const newTransaction = {
+    id: crypto.randomUUID(),
+    title,
+    amount,
+    category,
+    date
+  };
+
+  const updatedTransactions = [newTransaction, ...transactions];
+
+  try {
+    // Save to the JSON file before updating the dashboard.
+    await window.expenseAPI.save(updatedTransactions);
+
+    transactions = updatedTransactions;
+
+    renderTransactions();
+    updateSummary();
+
+    $("#expenseForm").reset();
+    $("#date").value = todayISO;
+    closeModal();
+  } catch (error) {
+    console.error("Could not save transaction:", error);
+    alert("Transaction could not be saved. Please try again.");
+  }
+});
+
 
     $("#viewAllBtn").addEventListener("click", () => {
       $("#searchInput").value = "";
@@ -1038,8 +1062,31 @@
       });
     });
 
+async function initializeApp() {
+  try {
+    const savedTransactions = await window.expenseAPI.read();
+
+    if (savedTransactions.length > 0) {
+      transactions = savedTransactions;
+    } else {
+      // Show demo transactions on the first launch.
+      transactions = demoTransactions;
+      await window.expenseAPI.save(transactions);
+    }
+
     renderTransactions();
     updateSummary();
+} catch (error) {
+  console.error("Could not load transactions:", error);
+  alert(`Could not load transactions: ${error.message}`);
+}
+//   } catch (error) {
+//     console.error("Could not load transactions:", error);
+//     alert("Could not load saved transactions. Check the application data file.");
+//   }
+}
+
+initializeApp();
   </script>
 </body>
 </html>
