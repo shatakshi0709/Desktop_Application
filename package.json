@@ -1,9 +1,8 @@
-
 {
   "name": "expense-tracker-desktop",
   "version": "1.0.0",
   "description": "A desktop application to manage personal expenses",
-  "main": "main.js",
+  "main": "desktop/main.js",
   "scripts": {
     "start": "electron ."
   },
@@ -12,5 +11,9 @@
   "license": "ISC",
   "devDependencies": {
     "electron": "^41.0.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
+    "dotenv": "^18.0.8"
   }
 }

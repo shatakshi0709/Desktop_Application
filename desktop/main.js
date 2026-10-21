@@ -1,7 +1,7 @@
 
 const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("node:path");
-const { readExpenses, saveExpenses } = require("./src/utils/storage");
+const { readExpenses, saveExpenses } = require("../src/utils/storage");
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -17,7 +17,7 @@ function createWindow() {
     }
   });
 
-  win.loadFile("index.html");
+  win.loadFile(path.join(__dirname, "index.html"));
 }
 
 ipcMain.handle("expenses:read", async () => {
