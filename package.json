@@ -1,0 +1,16 @@
+
+{
+  "name": "expense-tracker-desktop",
+  "version": "1.0.0",
+  "description": "A desktop application to manage personal expenses",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^41.0.0"
+  }
+}
