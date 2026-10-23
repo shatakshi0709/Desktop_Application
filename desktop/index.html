@@ -10,6 +10,148 @@
 </head>
 
 <body>
+
+<div id="landingPage" style="
+  position:fixed; inset:0; z-index:10000; overflow-y:auto;
+  background:#fbfaff; color:#282442;
+  font-family:Arial,sans-serif;">
+
+  <header style="
+    display:flex; align-items:center; justify-content:space-between;
+    padding:20px 6%; background:white; border-bottom:1px solid #eeeafa;">
+    <h2 style="margin:0;color:#5145cd;">SpendWise</h2>
+    <div style="display:flex;gap:10px;">
+      <button id="landingLogin" style="
+        padding:10px 16px;background:white;color:#5145cd;
+        border:1px solid #ddd5ff;border-radius:9px;cursor:pointer;">
+        Log In
+      </button>
+      <button id="landingSignup" style="
+        padding:10px 16px;background:#5145cd;color:white;
+        border:0;border-radius:9px;cursor:pointer;">
+        Sign Up
+      </button>
+    </div>
+  </header>
+
+  <section style="
+    padding:55px 7%;display:grid;
+    grid-template-columns:1fr 1fr;gap:36px;align-items:center;">
+
+    <div>
+      <p style="color:#5145cd;font-weight:bold;letter-spacing:1px;">
+        YOUR MONEY, YOUR CONTROL
+      </p>
+      <h1 style="font-size:clamp(34px,5vw,56px);line-height:1.12;margin:15px 0;">
+        Make every rupee <span style="color:#5145cd;">count.</span>
+      </h1>
+      <p style="font-size:17px;line-height:1.8;color:#6f6a83;">
+        Track expenses, manage income and understand your spending
+        with one simple personal finance dashboard.
+      </p>
+      <button id="landingGetStarted" style="
+        padding:14px 22px;background:#5145cd;color:white;
+        border:0;border-radius:10px;font-size:15px;cursor:pointer;">
+        Get Started →
+      </button>
+      <p style="color:#77718a;font-size:12px;">
+        Free to get started · Your own personal dashboard
+      </p>
+    </div>
+
+    <div style="
+      padding:24px;background:white;border:1px solid #eeeafa;
+      border-radius:20px;box-shadow:0 16px 45px #5145cd12;">
+
+      <p style="margin-top:0;color:#77718a;font-size:12px;">
+        SAMPLE DASHBOARD · DEMO DATA
+      </p>
+      <h3 style="margin-bottom:18px;">Your financial overview</h3>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div style="background:#f3f0ff;padding:16px;border-radius:12px;">
+          <small>Total balance</small>
+          <h2 style="margin-bottom:0;">₹24,850</h2>
+        </div>
+        <div style="background:#effbf4;padding:16px;border-radius:12px;">
+          <small>Total income</small>
+          <h2 style="margin-bottom:0;color:#168451;">₹32,000</h2>
+        </div>
+        <div style="background:#fff3ed;padding:16px;border-radius:12px;">
+          <small>Total expenses</small>
+          <h2 style="margin-bottom:0;color:#c65d38;">₹7,150</h2>
+        </div>
+        <div style="background:#f5f4fa;padding:16px;border-radius:12px;">
+          <small>Track spending</small>
+          <h2 style="margin-bottom:0;">By category</h2>
+        </div>
+      </div>
+
+      <p style="color:#77718a;font-size:12px;margin-bottom:0;">
+        These figures are illustrative only, not real user data.
+      </p>
+    </div>
+  </section>
+
+  <section style="padding:20px 7% 55px;text-align:center;">
+    <h2>Everything you need to manage your money</h2>
+    <div style="
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+      gap:16px;margin-top:25px;text-align:left;">
+
+      <div style="padding:22px;background:white;border:1px solid #eeeafa;border-radius:14px;">
+        <h3>Expense Tracking</h3>
+        <p style="color:#77718a;line-height:1.6;">Record purchases and keep track of where your money goes.</p>
+      </div>
+      <div style="padding:22px;background:white;border:1px solid #eeeafa;border-radius:14px;">
+        <h3>Income Monitoring</h3>
+        <p style="color:#77718a;line-height:1.6;">Track income and understand your available balance.</p>
+      </div>
+      <div style="padding:22px;background:white;border:1px solid #eeeafa;border-radius:14px;">
+        <h3>Spending Insights</h3>
+        <p style="color:#77718a;line-height:1.6;">Review spending by category and transaction history.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="authScreen" style="
+  position:fixed; inset:0; z-index:9999;
+  display:flex; align-items:center; justify-content:center;
+  background:#f5f5fb; font-family:Arial,sans-serif;">
+  <div style="
+    width:340px; max-width:90%; padding:32px;
+    border-radius:18px; background:white;
+    box-shadow:0 10px 40px #0001;">
+    <h1 style="color:#5145cd;margin-top:0">SpendWise</h1>
+    <p>Manage your finances securely.</p>
+
+    <form id="authForm">
+      <label for="authEmail">Email</label>
+      <input id="authEmail" type="email" required
+        autocomplete="email"
+        style="display:block;width:100%;box-sizing:border-box;padding:12px;margin:8px 0 16px">
+
+      <label for="authPassword">Password</label>
+      <input id="authPassword" type="password" required minlength="6"
+        autocomplete="current-password"
+        style="display:block;width:100%;box-sizing:border-box;padding:12px;margin:8px 0 16px">
+
+      <button id="authSubmit" type="submit"
+        style="width:100%;padding:12px;background:#5145cd;color:white;border:0;border-radius:8px;cursor:pointer">
+        Log In
+      </button>
+    </form>
+
+    <p id="authMessage" role="status" style="overflow-wrap:anywhere"></p>
+
+    <button id="toggleAuth" type="button"
+      style="background:none;border:0;color:#5145cd;cursor:pointer">
+      New here? Create an account
+    </button>
+  </div>
+</div>
+
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
@@ -445,29 +587,145 @@ $("#expenseForm").addEventListener("submit", async (event) => {
       });
     });
 
+
+let authMode = "login";
+
+const authScreen = document.getElementById("authScreen");
+
+const landingPage = document.getElementById("landingPage");
+
+function showLanding() {
+  landingPage.style.display = "block";
+  authScreen.style.display = "none";
+  document.querySelector(".app").style.display = "none";
+}
+
+document.getElementById("landingLogin").addEventListener("click", () => {
+  authMode = "login";
+  authSubmit.textContent = "Log In";
+  toggleAuth.textContent = "New here? Create an account";
+  authMessage.textContent = "";
+  showAuthScreen();
+});
+
+function openSignup() {
+  authMode = "register";
+  authSubmit.textContent = "Create Account";
+  toggleAuth.textContent = "Already registered? Log in";
+  authMessage.textContent = "";
+  showAuthScreen();
+}
+
+document.getElementById("landingSignup").addEventListener("click", openSignup);
+document.getElementById("landingGetStarted").addEventListener("click", openSignup);
+
+const authForm = document.getElementById("authForm");
+const authMessage = document.getElementById("authMessage");
+const authSubmit = document.getElementById("authSubmit");
+const toggleAuth = document.getElementById("toggleAuth");
+
+
+function showAuthScreen() {
+  landingPage.style.display = "none";
+  authScreen.style.display = "flex";
+  document.querySelector(".app").style.display = "none";
+}
+
+function showDashboard() {
+  landingPage.style.display = "none";
+  authScreen.style.display = "none";
+  document.querySelector(".app").style.display = "block";
+}
+
+
+function showDashboard() {
+  authScreen.style.display = "none";
+  document.querySelector(".app").style.display = "block";
+}
+
+toggleAuth.addEventListener("click", () => {
+  authMode = authMode === "login" ? "register" : "login";
+
+  authSubmit.textContent =
+    authMode === "login" ? "Log In" : "Create Account";
+
+  toggleAuth.textContent =
+    authMode === "login"
+      ? "New here? Create an account"
+      : "Already registered? Log in";
+
+  document.getElementById("authPassword").setAttribute(
+    "autocomplete",
+    authMode === "login" ? "current-password" : "new-password"
+  );
+
+  authMessage.textContent = "";
+});
+
+authForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const email = document.getElementById("authEmail").value.trim();
+  const password = document.getElementById("authPassword").value;
+
+  authSubmit.disabled = true;
+  authMessage.textContent = "Please wait...";
+
+  try {
+    const result = authMode === "login"
+      ? await window.expenseAPI.login({ email, password })
+      : await window.expenseAPI.register({ email, password });
+
+    authMessage.textContent = result.message || "";
+
+    if (!result.success) return;
+
+    if (authMode === "register" && !result.user) {
+      authMessage.textContent =
+        "Account created. Confirm your email, then log in.";
+      return;
+    }
+
+    if (authMode === "register") {
+      authMode = "login";
+      authSubmit.textContent = "Log In";
+    }
+
+    showDashboard();
+    await initializeApp();
+  } catch (error) {
+    authMessage.textContent = error.message || "Authentication failed.";
+  } finally {
+    authSubmit.disabled = false;
+  }
+});
+
+
+
 async function initializeApp() {
   try {
-    const savedTransactions = await window.expenseAPI.read();
+    const auth = await window.expenseAPI.currentUser();
 
-    if (savedTransactions.length > 0) {
-      transactions = savedTransactions;
-    } else {
-      // Show demo transactions on the first launch.
-      transactions = demoTransactions;
-      await window.expenseAPI.save(transactions);
-    }
+    if (!auth.success || !auth.user) {
+  showLanding();
+  return;
+}
+
+    showDashboard();
+
+    const savedTransactions = await window.expenseAPI.read();
+    transactions = savedTransactions;
 
     renderTransactions();
     updateSummary();
-} catch (error) {
-  console.error("Could not load transactions:", error);
-  alert(`Could not load transactions: ${error.message}`);
+  } catch (error) {
+    console.error("Could not initialize app:", error);
+    showLanding();
+    authMessage.textContent =
+      "Could not load your account. Please log in again.";
+  }
 }
-//   } catch (error) {
-//     console.error("Could not load transactions:", error);
-//     alert("Could not load saved transactions. Check the application data file.");
-//   }
-}
+
 
 initializeApp();
   </script>
