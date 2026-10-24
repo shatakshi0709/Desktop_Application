@@ -446,17 +446,26 @@ function refreshDashboard() {
   renderTransactions();
 }
 
+
 async function loadAccountData() {
   const profile = await window.expenseAPI.getProfile();
-  if (!profile.exists) return { needsSetup: true };
+
+  if (!profile.exists) {
+    return { needsSetup: true };
+  }
 
   userProfile = {
     openingBalance: Number(profile.openingBalance) || 0,
     monthlyIncome: Number(profile.monthlyIncome) || 0
   };
 
+  // Create this month's salary, if it doesn't already exist.
+  await window.expenseAPI.ensureCurrentMonthSalary();
+
+  // Read transactions after ensuring the salary exists.
   const saved = await window.expenseAPI.read();
   transactions = Array.isArray(saved) ? saved : [];
+
   return { needsSetup: false };
 }
 
