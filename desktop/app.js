@@ -409,6 +409,54 @@ function renderCategoryList(target, items, emptyText) {
   });
 }
 
+function renderCategoryDonut(items, total) {
+  const donut = $("#categoryDonut");
+  const donutTotal = $("#donutTotal");
+
+  donutTotal.textContent = formatMoney(total);
+
+  if (total <= 0 || items.length === 0) {
+    donut.style.background = "#e9e5ff";
+    donut.setAttribute(
+      "aria-label",
+      "No expenses recorded this month"
+    );
+    return;
+  }
+
+  let currentPercent = 0;
+
+  const segments = items.map((item, index) => {
+    const percentage = (item.amount / total) * 100;
+    const start = currentPercent;
+    currentPercent += percentage;
+
+    const color =
+      categoryColors[item.category] ||
+      ["#6c63ff", "#b7b1ff", "#9688f5", "#d8d0ff", "#8b7be8"][
+        index % 5
+      ];
+
+    return `${color} ${start}% ${currentPercent}%`;
+  });
+
+  donut.style.background =
+    `conic-gradient(${segments.join(", ")})`;
+
+  donut.setAttribute(
+    "aria-label",
+    items
+      .map((item) => {
+        const percentage = ((item.amount / total) * 100).toFixed(1);
+        const label =
+          categoryLabels[item.category] || item.category;
+
+        return `${label}: ${percentage}%`;
+      })
+      .join(", ")
+  );
+}
+
 function categoryTotals(filterFn) {
   const totalsByCategory = {};
 
@@ -422,20 +470,35 @@ function categoryTotals(filterFn) {
     .sort((a, b) => b.amount - a.amount);
 }
 
+
 function renderCategories() {
   const thisMonth = currentMonthKey();
+
   const monthExpenses = transactions.filter(
-    (item) => !isIncome(item) && monthKey(item.date) === thisMonth
+    (item) =>
+      !isIncome(item) &&
+      monthKey(item.date) === thisMonth
   );
+
   const monthTotal = monthExpenses.reduce(
     (sum, item) => sum + Number(item.amount),
     0
   );
 
-  $("#monthlySpending").innerHTML = `${formatMoney(monthTotal)} <small>this month</small>`;
+  const items = categoryTotals(
+    (item) =>
+      !isIncome(item) &&
+      monthKey(item.date) === thisMonth
+  );
+
+  $("#monthlySpending").innerHTML =
+    `${formatMoney(monthTotal)} <small>this month</small>`;
+
+  renderCategoryDonut(items, monthTotal);
+
   renderCategoryList(
     "#categoryList",
-    categoryTotals((item) => !isIncome(item) && monthKey(item.date) === thisMonth),
+    items,
     "No expenses recorded this month."
   );
 }

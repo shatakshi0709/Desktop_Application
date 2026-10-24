@@ -223,8 +223,29 @@
                 <p>Expenses by category this month</p>
               </div>
             </div>
-            <div class="spending-total" id="monthlySpending">₹0.00 <small>this month</small></div>
-            <div id="categoryList"></div>
+
+<div class="spending-total" id="monthlySpending">
+  ₹0.00 <small>this month</small>
+</div>
+
+<div class="category-breakdown-layout">
+  <div class="donut-chart-wrap">
+    <div
+      id="categoryDonut"
+      class="category-donut"
+      role="img"
+      aria-label="Expense breakdown by category"
+    >
+      <div class="donut-center">
+        <span>Total spent</span>
+        <strong id="donutTotal">₹0.00</strong>
+      </div>
+    </div>
+  </div>
+
+  <div id="categoryList"></div>
+</div>
+
           </div>
         </section>
 
@@ -384,6 +405,44 @@
           <button type="submit" class="primary-btn" id="expenseSubmit">Add transaction</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <div class="modal" id="monthEndModal" role="dialog" aria-modal="true" aria-labelledby="monthEndTitle">
+    <div class="modal-content month-end-content">
+      <div class="modal-heading">
+        <div>
+          <p class="eyebrow">YOUR MONTHLY SUMMARY</p>
+          <h2 id="monthEndTitle">Your Month in Review ✨</h2>
+          <p id="monthEndPeriod" class="card-note"></p>
+        </div>
+        <button class="close-btn" id="closeMonthEndBtn" type="button" aria-label="Close">×</button>
+      </div>
+
+      <div class="month-end-balance">
+        <p>Closing balance</p>
+        <h2 id="monthEndBalance">₹0.00</h2>
+        <p>Your remaining balance at month end</p>
+      </div>
+
+      <div class="month-end-stats">
+        <div>
+          <span>Total income</span>
+          <strong id="monthEndIncome">₹0.00</strong>
+        </div>
+        <div>
+          <span>Total spent</span>
+          <strong id="monthEndExpenses">₹0.00</strong>
+        </div>
+        <div>
+          <span>Net savings added</span>
+          <strong id="monthEndSavings">₹0.00</strong>
+        </div>
+      </div>
+
+      <button class="primary-btn" id="monthEndDoneBtn" type="button">
+        Got it!
+      </button>
     </div>
   </div>
 
