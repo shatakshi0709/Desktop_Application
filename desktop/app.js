@@ -167,8 +167,16 @@ function totals() {
     .filter(isIncome)
     .reduce((sum, item) => sum + Number(item.amount), 0);
 
+  const recordedIncome = transactions
+    .filter(
+      (item) =>
+        isIncome(item) &&
+        !/^Salary - \d{4}-\d{2}$/.test(String(item.title || ""))
+    )
+    .reduce((sum, item) => sum + Number(item.amount), 0);
+
   const openingBalance = Number(userProfile.openingBalance) || 0;
-  const balance = openingBalance + totalIncome - expenseTotal;
+  const balance = openingBalance + recordedIncome - expenseTotal;
 
   return {
     expenseTotal,
@@ -655,6 +663,7 @@ $("#setupForm").addEventListener("submit", async (event) => {
   try {
     await window.expenseAPI.saveProfile({ openingBalance, monthlyIncome });
     userProfile = { openingBalance, monthlyIncome };
+    await window.expenseAPI.ensureCurrentMonthSalary();
     const saved = await window.expenseAPI.read();
     transactions = Array.isArray(saved) ? saved : [];
     updateUserChrome();
