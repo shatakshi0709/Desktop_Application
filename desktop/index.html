@@ -1,195 +1,117 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Expense Tracker | Dashboard</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' data:;">
+  <title>SpendWise</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-<div id="landingPage" style="
-  position:fixed; inset:0; z-index:10000; overflow-y:auto;
-  background:#fbfaff; color:#282442;
-  font-family:Arial,sans-serif;">
-
-  <header style="
-    display:flex; align-items:center; justify-content:space-between;
-    padding:20px 6%; background:white; border-bottom:1px solid #eeeafa;">
-    <h2 style="margin:0;color:#5145cd;">SpendWise</h2>
-    <div style="display:flex;gap:10px;">
-      <button id="landingLogin" style="
-        padding:10px 16px;background:white;color:#5145cd;
-        border:1px solid #ddd5ff;border-radius:9px;cursor:pointer;">
-        Log In
-      </button>
-      <button id="landingSignup" style="
-        padding:10px 16px;background:#5145cd;color:white;
-        border:0;border-radius:9px;cursor:pointer;">
-        Sign Up
-      </button>
+  <div id="bootScreen" class="screen-overlay boot-screen">
+    <div class="boot-card">
+      <h1 class="overlay-title">SpendWise</h1>
+      <p>Loading your workspace…</p>
     </div>
-  </header>
-
-  <section style="
-    padding:55px 7%;display:grid;
-    grid-template-columns:1fr 1fr;gap:36px;align-items:center;">
-
-    <div>
-      <p style="color:#5145cd;font-weight:bold;letter-spacing:1px;">
-        YOUR MONEY, YOUR CONTROL
-      </p>
-      <h1 style="font-size:clamp(34px,5vw,56px);line-height:1.12;margin:15px 0;">
-        Make every rupee <span style="color:#5145cd;">count.</span>
-      </h1>
-      <p style="font-size:17px;line-height:1.8;color:#6f6a83;">
-        Track expenses, manage income and understand your spending
-        with one simple personal finance dashboard.
-      </p>
-      <button id="landingGetStarted" style="
-        padding:14px 22px;background:#5145cd;color:white;
-        border:0;border-radius:10px;font-size:15px;cursor:pointer;">
-        Get Started →
-      </button>
-      <p style="color:#77718a;font-size:12px;">
-        Free to get started · Your own personal dashboard
-      </p>
-    </div>
-
-    <div style="
-      padding:24px;background:white;border:1px solid #eeeafa;
-      border-radius:20px;box-shadow:0 16px 45px #5145cd12;">
-
-      <p style="margin-top:0;color:#77718a;font-size:12px;">
-        SAMPLE DASHBOARD · DEMO DATA
-      </p>
-      <h3 style="margin-bottom:18px;">Your financial overview</h3>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div style="background:#f3f0ff;padding:16px;border-radius:12px;">
-          <small>Total balance</small>
-          <h2 style="margin-bottom:0;">₹24,850</h2>
-        </div>
-        <div style="background:#effbf4;padding:16px;border-radius:12px;">
-          <small>Total income</small>
-          <h2 style="margin-bottom:0;color:#168451;">₹32,000</h2>
-        </div>
-        <div style="background:#fff3ed;padding:16px;border-radius:12px;">
-          <small>Total expenses</small>
-          <h2 style="margin-bottom:0;color:#c65d38;">₹7,150</h2>
-        </div>
-        <div style="background:#f5f4fa;padding:16px;border-radius:12px;">
-          <small>Track spending</small>
-          <h2 style="margin-bottom:0;">By category</h2>
-        </div>
-      </div>
-
-      <p style="color:#77718a;font-size:12px;margin-bottom:0;">
-        These figures are illustrative only, not real user data.
-      </p>
-    </div>
-  </section>
-
-  <section style="padding:20px 7% 55px;text-align:center;">
-    <h2>Everything you need to manage your money</h2>
-    <div style="
-      display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
-      gap:16px;margin-top:25px;text-align:left;">
-
-      <div style="padding:22px;background:white;border:1px solid #eeeafa;border-radius:14px;">
-        <h3>Expense Tracking</h3>
-        <p style="color:#77718a;line-height:1.6;">Record purchases and keep track of where your money goes.</p>
-      </div>
-      <div style="padding:22px;background:white;border:1px solid #eeeafa;border-radius:14px;">
-        <h3>Income Monitoring</h3>
-        <p style="color:#77718a;line-height:1.6;">Track income and understand your available balance.</p>
-      </div>
-      <div style="padding:22px;background:white;border:1px solid #eeeafa;border-radius:14px;">
-        <h3>Spending Insights</h3>
-        <p style="color:#77718a;line-height:1.6;">Review spending by category and transaction history.</p>
-      </div>
-    </div>
-  </section>
-</div>
-
-<div id="authScreen" style="
-  position:fixed; inset:0; z-index:9999;
-  display:flex; align-items:center; justify-content:center;
-  background:#f5f5fb; font-family:Arial,sans-serif;">
-  <div style="
-    width:340px; max-width:90%; padding:32px;
-    border-radius:18px; background:white;
-    box-shadow:0 10px 40px #0001;">
-    <h1 style="color:#5145cd;margin-top:0">SpendWise</h1>
-    <p>Manage your finances securely.</p>
-
-    <form id="authForm">
-      <label for="authEmail">Email</label>
-      <input id="authEmail" type="email" required
-        autocomplete="email"
-        style="display:block;width:100%;box-sizing:border-box;padding:12px;margin:8px 0 16px">
-
-      <label for="authPassword">Password</label>
-      <input id="authPassword" type="password" required minlength="6"
-        autocomplete="current-password"
-        style="display:block;width:100%;box-sizing:border-box;padding:12px;margin:8px 0 16px">
-
-      <button id="authSubmit" type="submit"
-        style="width:100%;padding:12px;background:#5145cd;color:white;border:0;border-radius:8px;cursor:pointer">
-        Log In
-      </button>
-    </form>
-
-    <p id="authMessage" role="status" style="overflow-wrap:anywhere"></p>
-
-    <button id="toggleAuth" type="button"
-      style="background:none;border:0;color:#5145cd;cursor:pointer">
-      New here? Create an account
-    </button>
   </div>
-</div>
 
-<div id="setupScreen" style="
-  display:none; position:fixed; inset:0; z-index:9998;
-  align-items:center; justify-content:center;
-  background:#fbfaff; font-family:Arial,sans-serif;
-">
-  <div style="
-    width:400px; max-width:90%; box-sizing:border-box;
-    padding:32px; background:white; border:1px solid #eeeafa;
-    border-radius:20px; box-shadow:0 12px 40px #5145cd12;
-  ">
-    <h1 style="color:#5145cd;margin-top:0;">Let's set up SpendWise 💜</h1>
-    <p style="color:#77718a;line-height:1.6;">
-      Tell us where you're starting from. You can update your finances later.
-    </p>
+  <div id="landingPage" class="screen-overlay landing-page">
+    <header class="landing-header">
+      <h2>SpendWise</h2>
+      <div class="landing-actions">
+        <button id="landingLogin" class="ghost-btn" type="button">Log In</button>
+        <button id="landingSignup" class="accent-btn" type="button">Sign Up</button>
+      </div>
+    </header>
 
-    <form id="setupForm">
-      <label for="openingBalance">Current opening balance (₹)</label>
-      <input id="openingBalance" type="number" min="0" step="0.01"
-        value="0" required
-        style="display:block;width:100%;box-sizing:border-box;padding:12px;margin:8px 0 18px;border:1px solid #ddd6f7;border-radius:8px;">
+    <section class="landing-hero">
+      <div>
+        <p class="landing-kicker">YOUR MONEY, YOUR CONTROL</p>
+        <h1>Make every rupee <span style="color:#5145cd;">count.</span></h1>
+        <p>Track expenses, manage income and understand your spending with one simple personal finance dashboard.</p>
+        <button id="landingGetStarted" class="landing-cta" type="button">Get Started →</button>
+        <p class="landing-note">Free to get started · Your own personal dashboard</p>
+      </div>
 
-      <label for="monthlyIncome">Monthly income (₹)</label>
-      <input id="monthlyIncome" type="number" min="0" step="0.01"
-        value="0" required
-        style="display:block;width:100%;box-sizing:border-box;padding:12px;margin:8px 0 18px;border:1px solid #ddd6f7;border-radius:8px;">
+      <div class="demo-card">
+        <p class="demo-label">SAMPLE DASHBOARD · DEMO DATA</p>
+        <h3 style="margin-bottom:18px;">Your financial overview</h3>
+        <div class="demo-grid">
+          <div class="demo-tile" style="background:#f3f0ff;"><small>Total balance</small><h2>₹24,850</h2></div>
+          <div class="demo-tile" style="background:#effbf4;"><small>Total income</small><h2 style="color:#168451;">₹32,000</h2></div>
+          <div class="demo-tile" style="background:#fff3ed;"><small>Total expenses</small><h2 style="color:#c65d38;">₹7,150</h2></div>
+          <div class="demo-tile" style="background:#f5f4fa;"><small>Track spending</small><h2>By category</h2></div>
+        </div>
+        <p class="landing-note">These figures are illustrative only, not real user data.</p>
+      </div>
+    </section>
 
-      <button id="setupSubmit" type="submit"
-        style="width:100%;padding:13px;background:#5145cd;color:white;border:0;border-radius:9px;cursor:pointer;">
-        Save & Continue
-      </button>
-    </form>
-
-    <p id="setupMessage" role="status"
-      style="color:#c0392b;overflow-wrap:anywhere;"></p>
+    <section class="landing-features">
+      <h2>Everything you need to manage your money</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h3>Expense Tracking</h3>
+          <p>Record purchases and keep track of where your money goes.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Income Monitoring</h3>
+          <p>Track income and understand your available balance.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Spending Insights</h3>
+          <p>Review spending by category and transaction history.</p>
+        </div>
+      </div>
+    </section>
   </div>
-</div>
 
-  <div class="app">
+  <div id="authScreen" class="screen-overlay auth-screen">
+    <div class="auth-card">
+      <h1 class="overlay-title">SpendWise</h1>
+      <p>Manage your finances securely.</p>
+
+      <form id="authForm">
+        <label class="field-label" for="authEmail">Email</label>
+        <input class="text-input" id="authEmail" type="email" required autocomplete="email">
+
+        <label class="field-label" for="authPassword">Password</label>
+        <input class="text-input" id="authPassword" type="password" required minlength="6" autocomplete="current-password">
+
+        <button id="authSubmit" class="full-btn" type="submit">Log In</button>
+      </form>
+
+      <p id="authMessage" class="status-message" role="status"></p>
+      <button id="toggleAuth" class="link-btn" type="button">New here? Create an account</button>
+      <p><button id="authBack" class="link-btn" type="button">← Back to home</button></p>
+    </div>
+  </div>
+
+  <div id="setupScreen" class="screen-overlay setup-screen">
+    <div class="setup-card">
+      <h1 class="overlay-title">Let's set up SpendWise</h1>
+      <p style="color:#77718a;line-height:1.6;">
+        Tell us where you're starting from. You can update your finances later.
+      </p>
+
+      <form id="setupForm">
+        <label class="field-label" for="openingBalance">Current opening balance (₹)</label>
+        <input class="text-input" id="openingBalance" type="number" min="0" step="0.01" value="0" required>
+
+        <label class="field-label" for="monthlyIncome">Monthly income (₹)</label>
+        <input class="text-input" id="monthlyIncome" type="number" min="0" step="0.01" value="0" required>
+
+        <button id="setupSubmit" class="full-btn" type="submit">Save &amp; Continue</button>
+      </form>
+
+      <p id="setupMessage" class="status-message error" role="status"></p>
+      <button id="setupLogout" class="link-btn" type="button">Sign out</button>
+    </div>
+  </div>
+
+  <div class="app" id="appShell">
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-icon">₹</div>
@@ -201,184 +123,233 @@
 
       <div class="nav-label">WORKSPACE</div>
 
-      <div class="nav-item active">
+      <button class="nav-item active" data-view="dashboard" type="button">
         <span class="nav-icon">▦</span>
         <span class="nav-text">Dashboard</span>
-      </div>
-
-      <div class="nav-item">
+      </button>
+      <button class="nav-item" data-view="transactions" type="button">
         <span class="nav-icon">↕</span>
         <span class="nav-text">Transactions</span>
-      </div>
-
-      <div class="nav-item">
+      </button>
+      <button class="nav-item" data-view="reports" type="button">
         <span class="nav-icon">▤</span>
         <span class="nav-text">Reports</span>
-      </div>
-
-      <div class="nav-item">
+      </button>
+      <button class="nav-item" data-view="settings" type="button">
         <span class="nav-icon">⚙</span>
         <span class="nav-text">Settings</span>
-      </div>
+      </button>
 
       <div class="sidebar-bottom">
         <div>PERSONAL WORKSPACE</div>
-        <div>Local expense manager</div>
+        <div class="workspace-meta" id="workspaceEmail">Signed in</div>
       </div>
     </aside>
 
     <main class="main">
       <header class="topbar">
         <div>
-          <div class="eyebrow">YOUR FINANCES AT A GLANCE</div>
-          <h1>Dashboard</h1>
+          <div class="eyebrow" id="pageEyebrow">YOUR FINANCES AT A GLANCE</div>
+          <h1 id="pageTitle">Dashboard</h1>
         </div>
 
         <div class="topbar-right">
           <div class="date-label" id="todayLabel"></div>
-          <div class="avatar">S</div>
-          <button class="primary-btn" id="openModalBtn">
-            + Add Expense
-          </button>
+          <div class="user-email" id="userEmailLabel"></div>
+          <div class="avatar" id="userAvatar">S</div>
+          <button class="primary-btn" id="openModalBtn" type="button">+ Add Expense</button>
+          <button class="logout-btn" id="logoutBtn" type="button">Log out</button>
         </div>
       </header>
 
-      <h2 class="section-heading">Financial Overview</h2>
+      <section id="view-dashboard" class="view-section is-visible">
+        <h2 class="section-heading">Financial Overview</h2>
 
-      <section class="summary-grid">
-        <div class="summary-card">
-          <div class="card-top">
-            <span class="card-label">Total Balance</span>
-            <span class="card-icon purple">₹</span>
+        <section class="summary-grid">
+          <div class="summary-card">
+            <div class="card-top">
+              <span class="card-label">Current Balance</span>
+              <span class="card-icon purple">₹</span>
+            </div>
+            <div class="amount" id="balanceAmount">₹0.00</div>
+            <div class="card-note">Opening balance + income − expenses</div>
           </div>
-          <div class="amount" id="balanceAmount">₹24,850.00</div>
-          <div class="card-note">Your current net balance</div>
-        </div>
 
-        <div class="summary-card">
-          <div class="card-top">
-            <span class="card-label">Total Income</span>
-            <span class="card-icon green">↙</span>
+          <div class="summary-card">
+            <div class="card-top">
+              <span class="card-label">Monthly Income</span>
+              <span class="card-icon green">↙</span>
+            </div>
+            <div class="amount" id="incomeAmount">₹0.00</div>
+            <div class="card-note" id="incomeNote">Set during your financial setup</div>
           </div>
-          <div class="amount" id="incomeAmount">₹32,000.00</div>
-          <div class="card-note"><span class="positive">Income</span> recorded in this demo</div>
-        </div>
 
-        <div class="summary-card">
-          <div class="card-top">
-            <span class="card-label">Total Expenses</span>
-            <span class="card-icon pink">↗</span>
+          <div class="summary-card">
+            <div class="card-top">
+              <span class="card-label">Total Expenses</span>
+              <span class="card-icon pink">↗</span>
+            </div>
+            <div class="amount" id="expenseAmount">₹0.00</div>
+            <div class="card-note"><span class="negative">Spending</span> from your transactions</div>
           </div>
-          <div class="amount" id="expenseAmount">₹7,150.00</div>
-          <div class="card-note"><span class="negative">Spending</span> recorded in this demo</div>
-        </div>
+        </section>
+
+        <section class="dashboard-grid">
+          <div class="panel">
+            <div class="panel-heading">
+              <div>
+                <h3>Income vs Expenses</h3>
+                <p>Your monthly financial activity</p>
+              </div>
+              <select class="period-select" id="chartPeriod">
+                <option value="6">Last 6 months</option>
+                <option value="3">Last 3 months</option>
+              </select>
+            </div>
+
+            <div class="chart-legend">
+              <span><span class="legend-dot" style="background:#b7b1ff"></span>Income</span>
+              <span><span class="legend-dot" style="background:#6c63ff"></span>Expenses</span>
+            </div>
+
+            <div class="chart" id="chartBars"></div>
+            <div class="chart-months" id="chartMonths"></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-heading">
+              <div>
+                <h3>Spending Breakdown</h3>
+                <p>Expenses by category this month</p>
+              </div>
+            </div>
+            <div class="spending-total" id="monthlySpending">₹0.00 <small>this month</small></div>
+            <div id="categoryList"></div>
+          </div>
+        </section>
+
+        <section class="transactions-panel">
+          <div class="transactions-header">
+            <div>
+              <h3>Recent Transactions</h3>
+              <p>Your latest income and expenses</p>
+            </div>
+            <input class="search" type="search" id="searchInput" placeholder="Search transactions...">
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>TRANSACTION</th>
+                  <th>CATEGORY</th>
+                  <th>DATE</th>
+                  <th>AMOUNT</th>
+                </tr>
+              </thead>
+              <tbody id="recentRows"></tbody>
+            </table>
+          </div>
+          <button class="view-all" id="viewAllBtn" type="button">View all transactions ↓</button>
+        </section>
       </section>
 
-      <section class="dashboard-grid">
-        <div class="panel">
-          <div class="panel-heading">
+      <section id="view-transactions" class="view-section">
+        <section class="transactions-panel">
+          <div class="transactions-header">
             <div>
-              <h3>Income vs Expenses</h3>
-              <p>Your monthly financial activity</p>
+              <h3>All Transactions</h3>
+              <p>Complete history for your account</p>
             </div>
-            <select class="period-select" id="chartPeriod">
-              <option value="6">Last 6 months</option>
-              <option value="3">Last 3 months</option>
-            </select>
+            <input class="search" type="search" id="searchAllInput" placeholder="Search transactions...">
           </div>
-
-          <div class="chart-legend">
-            <span><span class="legend-dot" style="background:#b7b1ff"></span>Income</span>
-            <span><span class="legend-dot" style="background:#6c63ff"></span>Expenses</span>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>TRANSACTION</th>
+                  <th>CATEGORY</th>
+                  <th>DATE</th>
+                  <th>AMOUNT</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="transactionRows"></tbody>
+            </table>
           </div>
-
-          <div class="chart" id="chartBars">
-            <div class="bar-group"><div class="bar income-bar" style="height:55%"></div><div class="bar expense-bar" style="height:30%"></div></div>
-            <div class="bar-group"><div class="bar income-bar" style="height:75%"></div><div class="bar expense-bar" style="height:42%"></div></div>
-            <div class="bar-group"><div class="bar income-bar" style="height:63%"></div><div class="bar expense-bar" style="height:35%"></div></div>
-            <div class="bar-group"><div class="bar income-bar" style="height:85%"></div><div class="bar expense-bar" style="height:48%"></div></div>
-            <div class="bar-group"><div class="bar income-bar" style="height:70%"></div><div class="bar expense-bar" style="height:40%"></div></div>
-            <div class="bar-group"><div class="bar income-bar" style="height:95%"></div><div class="bar expense-bar" style="height:52%"></div></div>
-          </div>
-
-          <div class="chart-months" id="chartMonths">
-            <span>May</span><span>Jun</span><span>Jul</span>
-            <span>Aug</span><span>Sep</span><span>Oct</span>
-          </div>
-        </div>
-
-        <div class="panel">
-          <div class="panel-heading">
-            <div>
-              <h3>Spending Breakdown</h3>
-              <p>Expenses by category</p>
-            </div>
-            <span>◉</span>
-          </div>
-
-          <div class="spending-total" id="monthlySpending">₹7,150 <small>this month</small></div>
-
-          <div class="category">
-            <div class="category-top"><span>🍔 Food & Dining</span><span>₹2,500</span></div>
-            <div class="progress"><div class="progress-fill" style="width:70%;background:#6c63ff"></div></div>
-          </div>
-
-          <div class="category">
-            <div class="category-top"><span>🚗 Transport</span><span>₹1,500</span></div>
-            <div class="progress"><div class="progress-fill" style="width:43%;background:#38b99b"></div></div>
-          </div>
-
-          <div class="category">
-            <div class="category-top"><span>🛍️ Shopping</span><span>₹1,800</span></div>
-            <div class="progress"><div class="progress-fill" style="width:52%;background:#ffad66"></div></div>
-          </div>
-
-          <div class="category">
-            <div class="category-top"><span>📚 Education</span><span>₹1,350</span></div>
-            <div class="progress"><div class="progress-fill" style="width:38%;background:#ed7895"></div></div>
-          </div>
-        </div>
+        </section>
       </section>
 
-      <section class="transactions-panel">
-        <div class="transactions-header">
-          <div>
-            <h3>Recent Transactions</h3>
-            <p>Your latest income and expenses</p>
+      <section id="view-reports" class="view-section">
+        <h2 class="section-heading">Spending reports</h2>
+        <section class="dashboard-grid">
+          <div class="panel">
+            <div class="panel-heading">
+              <div>
+                <h3>Category totals</h3>
+                <p>All recorded expenses</p>
+              </div>
+            </div>
+            <div id="reportCategoryList"></div>
           </div>
-          <input
-            class="search"
-            type="search"
-            id="searchInput"
-            placeholder="⌕  Search transactions..."
-          >
-        </div>
+          <div class="panel">
+            <div class="panel-heading">
+              <div>
+                <h3>Snapshot</h3>
+                <p>Your current financial position</p>
+              </div>
+            </div>
+            <div class="report-stat"><span>Current balance</span><strong id="reportBalance">₹0.00</strong></div>
+            <div class="report-stat"><span>Monthly income</span><strong id="reportIncome">₹0.00</strong></div>
+            <div class="report-stat"><span>Recorded extra income</span><strong id="reportExtraIncome">₹0.00</strong></div>
+            <div class="report-stat"><span>Total expenses</span><strong id="reportExpenses">₹0.00</strong></div>
+            <div class="report-stat"><span>This month’s spending</span><strong id="reportMonthSpend">₹0.00</strong></div>
+          </div>
+        </section>
+      </section>
 
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>TRANSACTION</th>
-                <th>CATEGORY</th>
-                <th>DATE</th>
-                <th>AMOUNT</th>
-              </tr>
-            </thead>
-            <tbody id="transactionRows"></tbody>
-          </table>
-        </div>
-
-        <button class="view-all" id="viewAllBtn">View all transactions ↓</button>
+      <section id="view-settings" class="view-section">
+        <h2 class="section-heading">Account settings</h2>
+        <section class="settings-grid">
+          <div class="panel">
+            <div class="panel-heading">
+              <div>
+                <h3>Financial profile</h3>
+                <p>Update the amounts used on your dashboard</p>
+              </div>
+            </div>
+            <form id="settingsForm">
+              <div class="form-group">
+                <label for="settingsOpeningBalance">Opening balance (₹)</label>
+                <input id="settingsOpeningBalance" type="number" min="0" step="0.01" required>
+              </div>
+              <div class="form-group">
+                <label for="settingsMonthlyIncome">Monthly income (₹)</label>
+                <input id="settingsMonthlyIncome" type="number" min="0" step="0.01" required>
+              </div>
+              <button class="primary-btn" id="settingsSubmit" type="submit">Save changes</button>
+              <p id="settingsMessage" class="status-message" role="status"></p>
+            </form>
+          </div>
+          <div class="panel">
+            <div class="panel-heading">
+              <div>
+                <h3>Session</h3>
+                <p>You are signed in to SpendWise</p>
+              </div>
+            </div>
+            <p class="card-note" id="settingsEmail"></p>
+            <button class="logout-btn" id="settingsLogout" type="button">Log out</button>
+          </div>
+        </section>
       </section>
     </main>
   </div>
 
-  <!-- Add expense form -->
   <div class="modal" id="expenseModal">
     <div class="modal-content">
       <div class="modal-heading">
         <h2>Add a transaction</h2>
-        <button class="close-btn" id="closeModalBtn" aria-label="Close">×</button>
+        <button class="close-btn" id="closeModalBtn" type="button" aria-label="Close">×</button>
       </div>
 
       <form id="expenseForm">
@@ -386,16 +357,14 @@
           <label for="title">Transaction title</label>
           <input id="title" name="title" placeholder="e.g. Lunch" required maxlength="60">
         </div>
-
         <div class="form-group">
           <label for="amount">Amount (₹)</label>
           <input id="amount" name="amount" type="number" min="0.01" step="0.01" placeholder="e.g. 250" required>
         </div>
-
         <div class="form-group">
           <label for="category">Category</label>
           <select id="category" name="category" required>
-            <option value="Food">Food & Dining</option>
+            <option value="Food">Food &amp; Dining</option>
             <option value="Transport">Transport</option>
             <option value="Shopping">Shopping</option>
             <option value="Education">Education</option>
@@ -405,461 +374,19 @@
             <option value="Income">Income</option>
           </select>
         </div>
-
         <div class="form-group">
           <label for="date">Date</label>
           <input id="date" name="date" type="date" required>
         </div>
-
+        <p id="expenseMessage" class="status-message error" role="status"></p>
         <div class="form-actions">
           <button type="button" class="secondary-btn" id="cancelBtn">Cancel</button>
-          <button type="submit" class="primary-btn">Add transaction</button>
+          <button type="submit" class="primary-btn" id="expenseSubmit">Add transaction</button>
         </div>
       </form>
     </div>
   </div>
 
-  <script>
-    // Demo data only: this is not saved to a file yet.
-// Transactions will be loaded from the JSON file.
-let transactions = [];
-
-const demoTransactions = [
-  { title: "Grocery Shopping", category: "Food", date: "2026-10-21", amount: 2500 },
-  { title: "Monthly Bus Pass", category: "Transport", date: "2026-10-19", amount: 1500 },
-  { title: "New Headphones", category: "Shopping", date: "2026-10-17", amount: 1800 },
-  { title: "Online Course", category: "Education", date: "2026-10-15", amount: 1350 }
-];
-
-    const categoryIcons = {
-      Food: "🍔",
-      Transport: "🚗",
-      Shopping: "🛍️",
-      Education: "📚",
-      Bills: "🧾",
-      Health: "💊",
-      Other: "📌",
-      Income: "💰"
-    };
-
-    const $ = (selector) => document.querySelector(selector);
-
-    function formatMoney(amount) {
-      return new Intl.NumberFormat("en-IN", {
-        style: "currency",
-        currency: "INR",
-        minimumFractionDigits: 2
-      }).format(amount);
-    }
-
-    function formatDate(dateString) {
-      return new Date(dateString + "T12:00:00").toLocaleDateString(
-        "en-IN",
-        { day: "numeric", month: "short", year: "numeric" }
-      );
-    }
-
-    function renderTransactions() {
-      const searchTerm = $("#searchInput").value.toLowerCase().trim();
-
-      const filtered = transactions.filter((item) =>
-        item.title.toLowerCase().includes(searchTerm) ||
-        item.category.toLowerCase().includes(searchTerm)
-      );
-
-      $("#transactionRows").innerHTML = "";
-
-      if (filtered.length === 0) {
-        $("#transactionRows").innerHTML =
-          '<tr><td colspan="4" class="empty-state">No matching transactions found.</td></tr>';
-        return;
-      }
-
-      filtered.forEach((item) => {
-        const isIncome = item.category === "Income";
-        const row = document.createElement("tr");
-
-        const nameCell = document.createElement("td");
-        const nameWrap = document.createElement("div");
-        nameWrap.className = "transaction-name";
-
-        const icon = document.createElement("span");
-        icon.className = "transaction-icon " + (isIncome ? "green" : "purple");
-        icon.textContent = categoryIcons[item.category] || "📌";
-
-        const details = document.createElement("div");
-        const title = document.createElement("div");
-        title.textContent = item.title;
-
-        const sub = document.createElement("div");
-        sub.className = "transaction-sub";
-        sub.textContent = isIncome ? "Money received" : "Money spent";
-
-        details.append(title, sub);
-        nameWrap.append(icon, details);
-        nameCell.append(nameWrap);
-
-        const categoryCell = document.createElement("td");
-        const tag = document.createElement("span");
-        tag.className = "tag";
-        tag.textContent = item.category;
-        categoryCell.append(tag);
-
-        const dateCell = document.createElement("td");
-        dateCell.textContent = formatDate(item.date);
-
-        const amountCell = document.createElement("td");
-        amountCell.className = isIncome ? "positive" : "negative";
-        amountCell.style.fontWeight = "700";
-        amountCell.textContent = (isIncome ? "+" : "−") + formatMoney(item.amount);
-
-        row.append(nameCell, categoryCell, dateCell, amountCell);
-        $("#transactionRows").append(row);
-      });
-    }
-
-
-let userProfile = {
-  openingBalance: 0,
-  monthlyIncome: 0
-};
-
-function updateSummary() {
-  const expenseTotal = transactions
-    .filter((item) => item.category !== "Income")
-    .reduce((total, item) => total + Number(item.amount), 0);
-
-  const recordedIncome = transactions
-    .filter((item) => item.category === "Income")
-    .reduce((total, item) => total + Number(item.amount), 0);
-
-  const monthlyIncome = Number(userProfile.monthlyIncome) || 0;
-  const openingBalance = Number(userProfile.openingBalance) || 0;
-
-  const totalIncome = monthlyIncome + recordedIncome;
-  const balance = openingBalance + totalIncome - expenseTotal;
-
-  $("#incomeAmount").textContent = formatMoney(totalIncome);
-  $("#expenseAmount").textContent = formatMoney(expenseTotal);
-  $("#balanceAmount").textContent = formatMoney(balance);
-}
-
-    function openModal() {
-      $("#expenseModal").classList.add("open");
-    }
-
-    function closeModal() {
-      $("#expenseModal").classList.remove("open");
-    }
-
-    const today = new Date();
-    const todayISO = [
-      today.getFullYear(),
-      String(today.getMonth() + 1).padStart(2, "0"),
-      String(today.getDate()).padStart(2, "0")
-    ].join("-");
-
-    $("#todayLabel").textContent = today.toLocaleDateString("en-IN", {
-      day: "numeric",
-      month: "short",
-      year: "numeric"
-    });
-
-    $("#date").value = todayISO;
-
-    $("#openModalBtn").addEventListener("click", openModal);
-    $("#closeModalBtn").addEventListener("click", closeModal);
-    $("#cancelBtn").addEventListener("click", closeModal);
-    $("#searchInput").addEventListener("input", renderTransactions);
-
-    $("#expenseModal").addEventListener("click", (event) => {
-      if (event.target === $("#expenseModal")) closeModal();
-    });
-
-
-$("#expenseForm").addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  const title = $("#title").value.trim();
-  const amount = Number($("#amount").value);
-  const category = $("#category").value;
-  const date = $("#date").value;
-
-  if (!title || !Number.isFinite(amount) || amount <= 0 || !date) {
-    alert("Please enter a valid title, amount, and date.");
-    return;
-  }
-
-  const newTransaction = {
-    id: crypto.randomUUID(),
-    title,
-    amount,
-    category,
-    date
-  };
-
-  const updatedTransactions = [newTransaction, ...transactions];
-
-  try {
-    // Save to the JSON file before updating the dashboard.
-    await window.expenseAPI.save(updatedTransactions);
-
-    transactions = updatedTransactions;
-
-    renderTransactions();
-    updateSummary();
-
-    $("#expenseForm").reset();
-    $("#date").value = todayISO;
-    closeModal();
-  } catch (error) {
-    console.error("Could not save transaction:", error);
-    alert("Transaction could not be saved. Please try again.");
-  }
-});
-
-
-    $("#viewAllBtn").addEventListener("click", () => {
-      $("#searchInput").value = "";
-      renderTransactions();
-      $("#searchInput").focus();
-    });
-
-    $("#chartPeriod").addEventListener("change", (event) => {
-      const count = Number(event.target.value);
-      const bars = [...$("#chartBars").children];
-      const months = [...$("#chartMonths").children];
-
-      bars.forEach((bar, index) => {
-        bar.style.display = index >= bars.length - count ? "flex" : "none";
-        months[index].style.display = index >= months.length - count ? "inline" : "none";
-      });
-    });
-
-
-let authMode = "login";
-
-const authScreen = document.getElementById("authScreen");
-
-const landingPage = document.getElementById("landingPage");
-
-function showLanding() {
-  landingPage.style.display = "block";
-  authScreen.style.display = "none";
-  document.querySelector(".app").style.display = "none";
-}
-
-document.getElementById("landingLogin").addEventListener("click", () => {
-  authMode = "login";
-  authSubmit.textContent = "Log In";
-  toggleAuth.textContent = "New here? Create an account";
-  authMessage.textContent = "";
-  showAuthScreen();
-});
-
-function openSignup() {
-  authMode = "register";
-  authSubmit.textContent = "Create Account";
-  toggleAuth.textContent = "Already registered? Log in";
-  authMessage.textContent = "";
-  showAuthScreen();
-}
-
-document.getElementById("landingSignup").addEventListener("click", openSignup);
-document.getElementById("landingGetStarted").addEventListener("click", openSignup);
-
-const authForm = document.getElementById("authForm");
-const authMessage = document.getElementById("authMessage");
-const authSubmit = document.getElementById("authSubmit");
-const toggleAuth = document.getElementById("toggleAuth");
-const setupScreen = document.getElementById("setupScreen");
-const setupForm = document.getElementById("setupForm");
-const setupMessage = document.getElementById("setupMessage");
-const setupSubmit = document.getElementById("setupSubmit");
-
-
-
-function showLanding() {
-  landingPage.style.display = "block";
-  authScreen.style.display = "none";
-  setupScreen.style.display = "none";
-  document.querySelector(".app").style.display = "none";
-}
-
-function showAuthScreen() {
-  landingPage.style.display = "none";
-  authScreen.style.display = "flex";
-  setupScreen.style.display = "none";
-  document.querySelector(".app").style.display = "none";
-}
-
-function showSetupScreen() {
-  landingPage.style.display = "none";
-  authScreen.style.display = "none";
-  setupScreen.style.display = "flex";
-  document.querySelector(".app").style.display = "none";
-}
-
-function showDashboard() {
-  landingPage.style.display = "none";
-  authScreen.style.display = "none";
-  setupScreen.style.display = "none";
-  document.querySelector(".app").style.display = "block";
-}
-
-
-toggleAuth.addEventListener("click", () => {
-  authMode = authMode === "login" ? "register" : "login";
-
-  authSubmit.textContent =
-    authMode === "login" ? "Log In" : "Create Account";
-
-  toggleAuth.textContent =
-    authMode === "login"
-      ? "New here? Create an account"
-      : "Already registered? Log in";
-
-  document.getElementById("authPassword").setAttribute(
-    "autocomplete",
-    authMode === "login" ? "current-password" : "new-password"
-  );
-
-  authMessage.textContent = "";
-});
-
-authForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  const email = document.getElementById("authEmail").value.trim();
-  const password = document.getElementById("authPassword").value;
-
-  authSubmit.disabled = true;
-  authMessage.textContent = "Please wait...";
-
-  try {
-    const result = authMode === "login"
-      ? await window.expenseAPI.login({ email, password })
-      : await window.expenseAPI.register({ email, password });
-
-    authMessage.textContent = result.message || "";
-
-    if (!result.success) return;
-
-    if (authMode === "register" && !result.user) {
-      authMessage.textContent =
-        "Account created. Confirm your email, then log in.";
-      return;
-    }
-
-    if (authMode === "register") {
-      authMode = "login";
-      authSubmit.textContent = "Log In";
-    }
-
-    showDashboard();
-    await initializeApp();
-  } catch (error) {
-    authMessage.textContent = error.message || "Authentication failed.";
-  } finally {
-    authSubmit.disabled = false;
-  }
-});
-
-
-
-setupForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  const openingBalance = Number(
-    document.getElementById("openingBalance").value
-  );
-
-  const monthlyIncome = Number(
-    document.getElementById("monthlyIncome").value
-  );
-
-  if (
-    !Number.isFinite(openingBalance) ||
-    !Number.isFinite(monthlyIncome) ||
-    openingBalance < 0 ||
-    monthlyIncome < 0
-  ) {
-    setupMessage.textContent = "Please enter valid amounts.";
-    return;
-  }
-
-  setupSubmit.disabled = true;
-  setupSubmit.textContent = "Saving...";
-  setupMessage.textContent = "";
-
-  try {
-await window.expenseAPI.saveProfile({
-  openingBalance: openingBalance,
-  monthlyIncome: monthlyIncome
-});
-userProfile = {
-  openingBalance,
-  monthlyIncome
-};
-    showDashboard();
-
-    const savedTransactions = await window.expenseAPI.read();
-    transactions = savedTransactions;
-
-    renderTransactions();
-    updateSummary();
-  } catch (error) {
-    console.error("Profile save failed:", error);
-    setupMessage.textContent = error.message || "Could not save your details.";
-  } finally {
-    setupSubmit.disabled = false;
-    setupSubmit.textContent = "Save & Continue";
-  }
-});
-
-
-async function initializeApp() {
-  try {
-    const auth = await window.expenseAPI.currentUser();
-
-    if (!auth.success || !auth.user) {
-      showLanding();
-      return;
-    }
-const profile = await window.expenseAPI.getProfile();
-
-if (!profile.exists) {
-  showSetupScreen();
-  return;
-}
-    // Check whether this user has completed financial setup.
-
-    if (!profile.exists) {
-      userProfile = {
-  openingBalance: profile.openingBalance,
-  monthlyIncome: profile.monthlyIncome
-};
-      showSetupScreen();
-      return;
-    }
-
-    showDashboard();
-
-    const savedTransactions = await window.expenseAPI.read();
-    transactions = savedTransactions;
-
-    renderTransactions();
-    updateSummary();
-  } catch (error) {
-    console.error("Could not initialize app:", error);
-    showLanding();
-    authMessage.textContent =
-      "Could not load your account. Please try logging in again.";
-  }
-}
-
-
-initializeApp();
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>

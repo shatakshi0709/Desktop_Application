@@ -557,7 +557,7 @@
     .modal {
       position: fixed;
       inset: 0;
-      z-index: 10;
+      z-index: 70;
       display: none;
       align-items: center;
       justify-content: center;
@@ -636,6 +636,10 @@
       flex: 1;
     }
 
+    #settingsForm .primary-btn {
+      margin-top: 4px;
+    }
+
     .empty-state {
       text-align: center;
       color: var(--muted);
@@ -659,6 +663,15 @@
       overflow-y: auto;
       background: #fbfaff;
       color: #282442;
+    }
+
+    .landing-page {
+      display: none;
+      z-index: 45;
+    }
+
+    .landing-page.is-visible {
+      display: block;
     }
 
     .boot-screen {
@@ -882,6 +895,31 @@
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       gap: 20px;
+    }
+
+    .view-section {
+      display: none;
+    }
+
+    .view-section.is-visible {
+      display: block;
+    }
+
+    .report-stat {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+
+    .accent-btn {
+      background: var(--primary-deep);
+      color: white;
+      border: 0;
+      border-radius: 9px;
+      padding: 10px 16px;
     }
 
     @media (max-width: 1050px) {
