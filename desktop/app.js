@@ -196,6 +196,109 @@ function currentMonthKey() {
   return todayISO().slice(0, 7);
 }
 
+function lastDayOfMonth(monthKey) {
+  const [year, month] = monthKey.split("-").map(Number);
+  const lastDay = new Date(year, month, 0).getDate();
+
+  return `${monthKey}-${String(lastDay).padStart(2, "0")}`;
+}
+
+function previousMonthKey() {
+  const date = new Date();
+  date.setDate(1);
+  date.setMonth(date.getMonth() - 1);
+
+  return `${date.getFullYear()}-${String(
+    date.getMonth() + 1
+  ).padStart(2, "0")}`;
+}
+
+function monthLabel(monthKey) {
+  const [year, month] = monthKey.split("-").map(Number);
+
+  return new Date(year, month - 1, 1).toLocaleDateString("en-IN", {
+    month: "long",
+    year: "numeric"
+  });
+}
+
+
+function getMonthEndSummary(targetMonth) {
+  const monthTransactions = transactions.filter(
+    (item) => monthKey(item.date) === targetMonth
+  );
+
+  const income = monthTransactions
+    .filter(isIncome)
+    .reduce((sum, item) => sum + Number(item.amount), 0);
+
+  const expenses = monthTransactions
+    .filter((item) => !isIncome(item))
+    .reduce((sum, item) => sum + Number(item.amount), 0);
+
+  const closingTransactions = transactions.filter(
+    (item) => item.date <= lastDayOfMonth(targetMonth)
+  );
+
+  const incomeUntilMonthEnd = closingTransactions
+    .filter(isIncome)
+    .reduce((sum, item) => sum + Number(item.amount), 0);
+
+  const expensesUntilMonthEnd = closingTransactions
+    .filter((item) => !isIncome(item))
+    .reduce((sum, item) => sum + Number(item.amount), 0);
+
+  return {
+    income,
+    expenses,
+    savings: income - expenses,
+    balance:
+      (Number(userProfile.openingBalance) || 0) +
+      incomeUntilMonthEnd -
+      expensesUntilMonthEnd
+  };
+}
+
+
+
+function showMonthEndSummary() {
+  if (!currentUser?.id) return;
+
+  const currentMonth = currentMonthKey();
+  const storageKey = `spendwise-last-seen-month-${currentUser.id}`;
+  const lastSeenMonth = localStorage.getItem(storageKey);
+
+  // First-time users should not get an old summary immediately.
+  if (!lastSeenMonth) {
+    localStorage.setItem(storageKey, currentMonth);
+    return;
+  }
+
+  if (lastSeenMonth >= currentMonth) return;
+
+  const summaryMonth = previousMonthKey();
+  const summary = getMonthEndSummary(summaryMonth);
+
+  $("#monthEndPeriod").textContent = monthLabel(summaryMonth);
+  $("#monthEndBalance").textContent = formatMoney(summary.balance);
+  $("#monthEndIncome").textContent = formatMoney(summary.income);
+  $("#monthEndExpenses").textContent = formatMoney(summary.expenses);
+  $("#monthEndSavings").textContent = formatMoney(summary.savings);
+
+  $("#monthEndModal").classList.add("open");
+
+  // Mark this month as seen so the popup won't repeat.
+  localStorage.setItem(storageKey, currentMonth);
+}
+
+function closeMonthEndSummary() {
+  $("#monthEndModal").classList.remove("open");
+}
+
+$("#closeMonthEndBtn").addEventListener("click", closeMonthEndSummary);
+$("#monthEndDoneBtn").addEventListener("click", closeMonthEndSummary);
+
+
 function updateSummary() {
   const { expenseTotal, extraIncome, monthlyIncome, balance } = totals();
   $("#incomeAmount").textContent = formatMoney(monthlyIncome);
