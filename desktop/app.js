@@ -163,16 +163,22 @@ function totals() {
     .filter((item) => !isIncome(item))
     .reduce((sum, item) => sum + Number(item.amount), 0);
 
-  const extraIncome = transactions
-    .filter((item) => isIncome(item))
+  const totalIncome = transactions
+    .filter(isIncome)
     .reduce((sum, item) => sum + Number(item.amount), 0);
 
-  const monthlyIncome = Number(userProfile.monthlyIncome) || 0;
   const openingBalance = Number(userProfile.openingBalance) || 0;
-  const balance = openingBalance + monthlyIncome + extraIncome - expenseTotal;
+  const balance = openingBalance + totalIncome - expenseTotal;
 
-  return { expenseTotal, extraIncome, monthlyIncome, openingBalance, balance };
+  return {
+    expenseTotal,
+    extraIncome: totalIncome,
+    monthlyIncome: totalIncome,
+    openingBalance,
+    balance
+  };
 }
+
 
 function monthKey(dateString) {
   return String(dateString || "").slice(0, 7);
@@ -196,6 +202,7 @@ function renderChart() {
   const count = Number($("#chartPeriod").value);
   const now = new Date();
   const groups = [];
+
 
   for (let index = count - 1; index >= 0; index -= 1) {
     const date = new Date(now.getFullYear(), now.getMonth() - index, 1);

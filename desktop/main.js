@@ -12,6 +12,7 @@ const {
 const path = require("node:path");
 const fs = require("node:fs/promises");
 const { createClient } = require("@supabase/supabase-js");
+const crypto = require("node:crypto");
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_PUBLISHABLE_KEY;
@@ -389,6 +390,74 @@ ipcMain.handle("profile:save", async (_event, profile = {}) => {
     throw new Error(friendlyError(error, "Could not save your profile."));
   }
 });
+
+
+
+ipcMain.handle("salary:ensure-current-month", async () => {
+  try {
+    const user = await requireUser();
+
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("monthly_income")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (profileError) throw new Error(profileError.message);
+    if (!profile) throw new Error("Please complete your financial setup first.");
+
+    const amount = Number(profile.monthly_income);
+
+    // Zero income means there is no salary transaction to create.
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return { success: true, created: false };
+    }
+
+    const now = new Date();
+    const month = [
+      now.getFullYear(),
+      String(now.getMonth() + 1).padStart(2, "0")
+    ].join("-");
+
+    // Stable UUID for this user and month.
+    const hash = crypto
+      .createHash("sha256")
+      .update(`spendwise-salary:${user.id}:${month}`)
+      .digest("hex");
+
+    const id = [
+      hash.slice(0, 8),
+      hash.slice(8, 12),
+      `4${hash.slice(13, 16)}`,
+      `${((parseInt(hash.slice(16, 17), 16) & 3) | 8).toString(16)}${hash.slice(17, 20)}`,
+      hash.slice(20, 32)
+    ].join("-");
+
+    const { error } = await supabase
+      .from("expenses")
+      .upsert(
+        {
+          id,
+          user_id: user.id,
+          title: `Salary - ${month}`,
+          amount,
+          category: "Income",
+          transaction_type: "income",
+          expense_date: `${month}-01`
+        },
+        { onConflict: "id", ignoreDuplicates: true }
+      );
+
+    if (error) throw new Error(error.message);
+
+    return { success: true, created: true };
+  } catch (error) {
+    throw new Error(
+      friendlyError(error, "Could not create this month's salary.")
+    );
+  }
+});
+
 
 ipcMain.handle("supabase:test", async () => {
   try {

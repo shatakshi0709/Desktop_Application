@@ -7,7 +7,8 @@ contextBridge.exposeInMainWorld("expenseAPI", {
   remove: (id) => ipcRenderer.invoke("expenses:delete", id),
 
   testSupabase: () => ipcRenderer.invoke("supabase:test"),
-
+ensureCurrentMonthSalary: () =>
+  ipcRenderer.invoke("salary:ensure-current-month"),
   register: (credentials) =>
     ipcRenderer.invoke("auth:register", credentials),
 
