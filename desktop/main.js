@@ -1,4 +1,3 @@
-
 require("dotenv").config({
   path: require("node:path").join(__dirname, "../.env")
 });
@@ -21,7 +20,6 @@ if (!supabaseUrl || !supabaseKey) {
   throw new Error("Supabase credentials are missing. Check your root .env file.");
 }
 
-// Store the Supabase session encrypted on this computer.
 const sessionFile = () =>
   path.join(app.getPath("userData"), "supabase-session.enc");
 
@@ -73,6 +71,75 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
   }
 });
 
+function friendlyError(error, fallback) {
+  const message = error?.message || String(error || "");
+
+  if (/fetch|network|ENOTFOUND|ECONN|Failed to fetch|timed out/i.test(message)) {
+    return "Network error. Check your internet connection and try again.";
+  }
+
+  return message || fallback || "Something went wrong. Please try again.";
+}
+
+function publicUser(user) {
+  return { id: user.id, email: user.email };
+}
+
+async function requireUser() {
+  const { data, error } = await supabase.auth.getUser();
+
+  if (error || !data.user) {
+    throw new Error("Please log in first.");
+  }
+
+  return data.user;
+}
+
+function mapExpenseRow(item) {
+  return {
+    id: item.id,
+    title: item.title,
+    amount: Number(item.amount),
+    category: item.category,
+    date: item.expense_date,
+    transactionType: item.transaction_type
+  };
+}
+
+function expenseRowFromClient(item, userId) {
+  const title = String(item.title || "").trim();
+  const amount = Number(item.amount);
+  const category = String(item.category || "").trim();
+  const date = String(item.date || "").trim();
+  const isIncome = category === "Income";
+
+  if (!title || title.length > 60) {
+    throw new Error("Please enter a title of up to 60 characters.");
+  }
+
+  if (!Number.isFinite(amount) || amount <= 0) {
+    throw new Error("Please enter a valid amount greater than zero.");
+  }
+
+  if (!category) {
+    throw new Error("Please choose a category.");
+  }
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    throw new Error("Please choose a valid date.");
+  }
+
+  return {
+    id: item.id,
+    user_id: userId,
+    title,
+    amount,
+    category,
+    transaction_type: isIncome ? "income" : "expense",
+    expense_date: date
+  };
+}
+
 function createWindow() {
   const win = new BrowserWindow({
     width: 1200,
@@ -83,156 +150,268 @@ function createWindow() {
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
-      nodeIntegration: false
+      nodeIntegration: false,
+      sandbox: true
     }
   });
 
   win.loadFile(path.join(__dirname, "index.html"));
 }
 
-// Return the authenticated user's current account.
 ipcMain.handle("auth:current-user", async () => {
-  const { data, error } = await supabase.auth.getUser();
+  try {
+    const { data, error } = await supabase.auth.getUser();
 
-  if (error || !data.user) {
-    return { success: false, user: null };
+    if (error || !data.user) {
+      return { success: false, user: null };
+    }
+
+    return {
+      success: true,
+      user: publicUser(data.user)
+    };
+  } catch (error) {
+    return {
+      success: false,
+      user: null,
+      message: friendlyError(error, "Could not restore your session.")
+    };
   }
-
-  return {
-    success: true,
-    user: { id: data.user.id, email: data.user.email }
-  };
 });
 
-// Register a new account.
-ipcMain.handle("auth:register", async (_event, { email, password }) => {
-  const { data, error } = await supabase.auth.signUp({
-    email: email.trim(),
-    password
-  });
+ipcMain.handle("auth:register", async (_event, credentials = {}) => {
+  try {
+    const email = String(credentials.email || "").trim();
+    const password = String(credentials.password || "");
 
-  if (error) return { success: false, message: error.message };
+    if (!email || !password) {
+      return { success: false, message: "Email and password are required." };
+    }
 
-  return {
-    success: true,
-    user: data.session
-      ? { id: data.user.id, email: data.user.email }
-      : null,
-    message: data.session
-      ? "Registration successful!"
-      : "Check your email to confirm your account before logging in."
-  };
+    if (password.length < 6) {
+      return { success: false, message: "Password must be at least 6 characters." };
+    }
+
+    const { data, error } = await supabase.auth.signUp({ email, password });
+
+    if (error) return { success: false, message: error.message };
+
+    return {
+      success: true,
+      user: data.session ? publicUser(data.user) : null,
+      message: data.session
+        ? "Registration successful!"
+        : "Check your email to confirm your account before logging in."
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: friendlyError(error, "Registration failed.")
+    };
+  }
 });
 
-// Log in and persist the session.
-ipcMain.handle("auth:login", async (_event, { email, password }) => {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: email.trim(),
-    password
-  });
+ipcMain.handle("auth:login", async (_event, credentials = {}) => {
+  try {
+    const email = String(credentials.email || "").trim();
+    const password = String(credentials.password || "");
 
-  if (error) return { success: false, message: error.message };
+    if (!email || !password) {
+      return { success: false, message: "Email and password are required." };
+    }
 
-  return {
-    success: true,
-    user: { id: data.user.id, email: data.user.email }
-  };
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) return { success: false, message: error.message };
+
+    return {
+      success: true,
+      user: publicUser(data.user)
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: friendlyError(error, "Login failed.")
+    };
+  }
 });
 
 ipcMain.handle("auth:logout", async () => {
-  const { error } = await supabase.auth.signOut();
+  try {
+    const { error } = await supabase.auth.signOut();
 
-  if (error) return { success: false, message: error.message };
-  return { success: true };
-});
-
-// Fetch only the signed-in user's expenses. RLS enforces ownership.
-ipcMain.handle("expenses:read", async () => {
-  const { data: userData, error: userError } =
-    await supabase.auth.getUser();
-
-  if (userError || !userData.user) {
-    throw new Error("Please log in to view your expenses.");
-  }
-
-  const { data, error } = await supabase
-    .from("expenses")
-    .select("id, title, amount, category, transaction_type, expense_date")
-    .eq("user_id", userData.user.id)
-    .order("expense_date", { ascending: false });
-
-  if (error) throw new Error(error.message);
-
-  return data.map((item) => ({
-    id: item.id,
-    title: item.title,
-    amount: Number(item.amount),
-    category: item.category,
-    date: item.expense_date
-  }));
-});
-
-// Save the supplied expense list to the signed-in user's cloud account.
-ipcMain.handle("expenses:save", async (_event, expenses) => {
-  if (!Array.isArray(expenses)) {
-    throw new Error("Expenses must be an array.");
-  }
-
-  const { data: userData, error: userError } =
-    await supabase.auth.getUser();
-
-  if (userError || !userData.user) {
-    throw new Error("Please log in before saving expenses.");
-  }
-
-  if (expenses.length === 0) return [];
-
-  const userId = userData.user.id;
-
-  const rows = expenses.map((item) => {
-    const isIncome = item.category === "Income";
-
-    return {
-      id: item.id,
-      user_id: userId,
-      title: String(item.title).trim(),
-      amount: Number(item.amount),
-      category: item.category,
-      transaction_type: isIncome ? "income" : "expense",
-      expense_date: item.date
-    };
-  });
-
-  const { error } = await supabase
-    .from("expenses")
-    .upsert(rows, { onConflict: "id" });
-
-  if (error) throw new Error(error.message);
-
-  return { success: true };
-});
-
-// Diagnostic check: requires a logged-in user.
-ipcMain.handle("supabase:test", async () => {
-  const { data: userData, error: userError } =
-    await supabase.auth.getUser();
-
-  if (userError || !userData.user) {
+    if (error) return { success: false, message: error.message };
+    return { success: true };
+  } catch (error) {
     return {
       success: false,
-      message: "Please log in before testing the database."
+      message: friendlyError(error, "Logout failed.")
     };
   }
+});
 
-  const { error } = await supabase
-    .from("expenses")
-    .select("id")
-    .eq("user_id", userData.user.id)
-    .limit(1);
+ipcMain.handle("expenses:read", async () => {
+  try {
+    const user = await requireUser();
 
-  if (error) return { success: false, message: error.message };
+    const { data, error } = await supabase
+      .from("expenses")
+      .select("id, title, amount, category, transaction_type, expense_date")
+      .eq("user_id", user.id)
+      .order("expense_date", { ascending: false });
 
-  return { success: true, message: "Authenticated Supabase connection successful!" };
+    if (error) throw new Error(error.message);
+
+    return data.map(mapExpenseRow);
+  } catch (error) {
+    throw new Error(friendlyError(error, "Could not load your expenses."));
+  }
+});
+
+ipcMain.handle("expenses:save", async (_event, expenses) => {
+  try {
+    if (!Array.isArray(expenses)) {
+      throw new Error("Expenses must be an array.");
+    }
+
+    const user = await requireUser();
+
+    if (expenses.length === 0) return { success: true };
+
+    const rows = expenses.map((item) => expenseRowFromClient(item, user.id));
+
+    const { error } = await supabase
+      .from("expenses")
+      .upsert(rows, { onConflict: "id" });
+
+    if (error) throw new Error(error.message);
+
+    return { success: true };
+  } catch (error) {
+    throw new Error(friendlyError(error, "Could not save expenses."));
+  }
+});
+
+ipcMain.handle("expenses:add", async (_event, expense) => {
+  try {
+    const user = await requireUser();
+    const row = expenseRowFromClient(expense, user.id);
+
+    const { data, error } = await supabase
+      .from("expenses")
+      .insert(row)
+      .select("id, title, amount, category, transaction_type, expense_date")
+      .single();
+
+    if (error) throw new Error(error.message);
+
+    return mapExpenseRow(data);
+  } catch (error) {
+    throw new Error(friendlyError(error, "Could not add this transaction."));
+  }
+});
+
+ipcMain.handle("expenses:delete", async (_event, id) => {
+  try {
+    const user = await requireUser();
+
+    if (!id) throw new Error("Missing transaction id.");
+
+    const { error } = await supabase
+      .from("expenses")
+      .delete()
+      .eq("id", id)
+      .eq("user_id", user.id);
+
+    if (error) throw new Error(error.message);
+
+    return { success: true };
+  } catch (error) {
+    throw new Error(friendlyError(error, "Could not delete this transaction."));
+  }
+});
+
+ipcMain.handle("profile:get", async () => {
+  try {
+    const user = await requireUser();
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("opening_balance, monthly_income")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (error) throw new Error(error.message);
+
+    return {
+      exists: Boolean(data),
+      openingBalance: Number(data?.opening_balance ?? 0),
+      monthlyIncome: Number(data?.monthly_income ?? 0)
+    };
+  } catch (error) {
+    throw new Error(friendlyError(error, "Could not load your profile."));
+  }
+});
+
+ipcMain.handle("profile:save", async (_event, profile = {}) => {
+  try {
+    const user = await requireUser();
+    const openingBalance = Number(profile.openingBalance);
+    const monthlyIncome = Number(profile.monthlyIncome);
+
+    if (
+      !Number.isFinite(openingBalance) ||
+      !Number.isFinite(monthlyIncome) ||
+      openingBalance < 0 ||
+      monthlyIncome < 0
+    ) {
+      throw new Error("Please enter valid, non-negative amounts.");
+    }
+
+    const { error } = await supabase
+      .from("profiles")
+      .upsert(
+        {
+          user_id: user.id,
+          opening_balance: openingBalance,
+          monthly_income: monthlyIncome
+        },
+        { onConflict: "user_id" }
+      );
+
+    if (error) throw new Error(error.message);
+
+    return { success: true };
+  } catch (error) {
+    throw new Error(friendlyError(error, "Could not save your profile."));
+  }
+});
+
+ipcMain.handle("supabase:test", async () => {
+  try {
+    const user = await requireUser();
+
+    const { error } = await supabase
+      .from("expenses")
+      .select("id")
+      .eq("user_id", user.id)
+      .limit(1);
+
+    if (error) return { success: false, message: error.message };
+
+    return {
+      success: true,
+      message: "Authenticated Supabase connection successful!"
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: friendlyError(error, "Please log in before testing the database.")
+    };
+  }
 });
 
 app.whenReady().then(() => {

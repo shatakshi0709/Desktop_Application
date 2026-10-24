@@ -1,9 +1,10 @@
-
 const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("expenseAPI", {
   read: () => ipcRenderer.invoke("expenses:read"),
   save: (expenses) => ipcRenderer.invoke("expenses:save", expenses),
+  add: (expense) => ipcRenderer.invoke("expenses:add", expense),
+  remove: (id) => ipcRenderer.invoke("expenses:delete", id),
 
   testSupabase: () => ipcRenderer.invoke("supabase:test"),
 
@@ -17,5 +18,8 @@ contextBridge.exposeInMainWorld("expenseAPI", {
     ipcRenderer.invoke("auth:logout"),
 
   currentUser: () =>
-    ipcRenderer.invoke("auth:current-user")
+    ipcRenderer.invoke("auth:current-user"),
+
+  getProfile: () => ipcRenderer.invoke("profile:get"),
+  saveProfile: (profile) => ipcRenderer.invoke("profile:save", profile)
 });

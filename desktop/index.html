@@ -152,6 +152,43 @@
   </div>
 </div>
 
+<div id="setupScreen" style="
+  display:none; position:fixed; inset:0; z-index:9998;
+  align-items:center; justify-content:center;
+  background:#fbfaff; font-family:Arial,sans-serif;
+">
+  <div style="
+    width:400px; max-width:90%; box-sizing:border-box;
+    padding:32px; background:white; border:1px solid #eeeafa;
+    border-radius:20px; box-shadow:0 12px 40px #5145cd12;
+  ">
+    <h1 style="color:#5145cd;margin-top:0;">Let's set up SpendWise 💜</h1>
+    <p style="color:#77718a;line-height:1.6;">
+      Tell us where you're starting from. You can update your finances later.
+    </p>
+
+    <form id="setupForm">
+      <label for="openingBalance">Current opening balance (₹)</label>
+      <input id="openingBalance" type="number" min="0" step="0.01"
+        value="0" required
+        style="display:block;width:100%;box-sizing:border-box;padding:12px;margin:8px 0 18px;border:1px solid #ddd6f7;border-radius:8px;">
+
+      <label for="monthlyIncome">Monthly income (₹)</label>
+      <input id="monthlyIncome" type="number" min="0" step="0.01"
+        value="0" required
+        style="display:block;width:100%;box-sizing:border-box;padding:12px;margin:8px 0 18px;border:1px solid #ddd6f7;border-radius:8px;">
+
+      <button id="setupSubmit" type="submit"
+        style="width:100%;padding:13px;background:#5145cd;color:white;border:0;border-radius:9px;cursor:pointer;">
+        Save & Continue
+      </button>
+    </form>
+
+    <p id="setupMessage" role="status"
+      style="color:#c0392b;overflow-wrap:anywhere;"></p>
+  </div>
+</div>
+
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
@@ -481,19 +518,31 @@ const demoTransactions = [
       });
     }
 
-    function updateSummary() {
-      const income = transactions
-        .filter((item) => item.category === "Income")
-        .reduce((total, item) => total + item.amount, 32000);
 
-      const expenses = transactions
-        .filter((item) => item.category !== "Income")
-        .reduce((total, item) => total + item.amount, 0);
+let userProfile = {
+  openingBalance: 0,
+  monthlyIncome: 0
+};
 
-      $("#incomeAmount").textContent = formatMoney(income);
-      $("#expenseAmount").textContent = formatMoney(expenses);
-      $("#balanceAmount").textContent = formatMoney(income - expenses);
-    }
+function updateSummary() {
+  const expenseTotal = transactions
+    .filter((item) => item.category !== "Income")
+    .reduce((total, item) => total + Number(item.amount), 0);
+
+  const recordedIncome = transactions
+    .filter((item) => item.category === "Income")
+    .reduce((total, item) => total + Number(item.amount), 0);
+
+  const monthlyIncome = Number(userProfile.monthlyIncome) || 0;
+  const openingBalance = Number(userProfile.openingBalance) || 0;
+
+  const totalIncome = monthlyIncome + recordedIncome;
+  const balance = openingBalance + totalIncome - expenseTotal;
+
+  $("#incomeAmount").textContent = formatMoney(totalIncome);
+  $("#expenseAmount").textContent = formatMoney(expenseTotal);
+  $("#balanceAmount").textContent = formatMoney(balance);
+}
 
     function openModal() {
       $("#expenseModal").classList.add("open");
@@ -623,25 +672,41 @@ const authForm = document.getElementById("authForm");
 const authMessage = document.getElementById("authMessage");
 const authSubmit = document.getElementById("authSubmit");
 const toggleAuth = document.getElementById("toggleAuth");
+const setupScreen = document.getElementById("setupScreen");
+const setupForm = document.getElementById("setupForm");
+const setupMessage = document.getElementById("setupMessage");
+const setupSubmit = document.getElementById("setupSubmit");
 
+
+
+function showLanding() {
+  landingPage.style.display = "block";
+  authScreen.style.display = "none";
+  setupScreen.style.display = "none";
+  document.querySelector(".app").style.display = "none";
+}
 
 function showAuthScreen() {
   landingPage.style.display = "none";
   authScreen.style.display = "flex";
+  setupScreen.style.display = "none";
+  document.querySelector(".app").style.display = "none";
+}
+
+function showSetupScreen() {
+  landingPage.style.display = "none";
+  authScreen.style.display = "none";
+  setupScreen.style.display = "flex";
   document.querySelector(".app").style.display = "none";
 }
 
 function showDashboard() {
   landingPage.style.display = "none";
   authScreen.style.display = "none";
+  setupScreen.style.display = "none";
   document.querySelector(".app").style.display = "block";
 }
 
-
-function showDashboard() {
-  authScreen.style.display = "none";
-  document.querySelector(".app").style.display = "block";
-}
 
 toggleAuth.addEventListener("click", () => {
   authMode = authMode === "login" ? "register" : "login";
@@ -702,14 +767,81 @@ authForm.addEventListener("submit", async (event) => {
 
 
 
+setupForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const openingBalance = Number(
+    document.getElementById("openingBalance").value
+  );
+
+  const monthlyIncome = Number(
+    document.getElementById("monthlyIncome").value
+  );
+
+  if (
+    !Number.isFinite(openingBalance) ||
+    !Number.isFinite(monthlyIncome) ||
+    openingBalance < 0 ||
+    monthlyIncome < 0
+  ) {
+    setupMessage.textContent = "Please enter valid amounts.";
+    return;
+  }
+
+  setupSubmit.disabled = true;
+  setupSubmit.textContent = "Saving...";
+  setupMessage.textContent = "";
+
+  try {
+await window.expenseAPI.saveProfile({
+  openingBalance: openingBalance,
+  monthlyIncome: monthlyIncome
+});
+userProfile = {
+  openingBalance,
+  monthlyIncome
+};
+    showDashboard();
+
+    const savedTransactions = await window.expenseAPI.read();
+    transactions = savedTransactions;
+
+    renderTransactions();
+    updateSummary();
+  } catch (error) {
+    console.error("Profile save failed:", error);
+    setupMessage.textContent = error.message || "Could not save your details.";
+  } finally {
+    setupSubmit.disabled = false;
+    setupSubmit.textContent = "Save & Continue";
+  }
+});
+
+
 async function initializeApp() {
   try {
     const auth = await window.expenseAPI.currentUser();
 
     if (!auth.success || !auth.user) {
-  showLanding();
+      showLanding();
+      return;
+    }
+const profile = await window.expenseAPI.getProfile();
+
+if (!profile.exists) {
+  showSetupScreen();
   return;
 }
+    // Check whether this user has completed financial setup.
+
+    if (!profile.exists) {
+      userProfile = {
+  openingBalance: profile.openingBalance,
+  monthlyIncome: profile.monthlyIncome
+};
+      showSetupScreen();
+      return;
+    }
 
     showDashboard();
 
@@ -722,7 +854,7 @@ async function initializeApp() {
     console.error("Could not initialize app:", error);
     showLanding();
     authMessage.textContent =
-      "Could not load your account. Please log in again.";
+      "Could not load your account. Please try logging in again.";
   }
 }
 

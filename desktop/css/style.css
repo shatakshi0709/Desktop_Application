@@ -7,7 +7,8 @@
 
     :root {
       --primary: #6c63ff;
-      --bg: #f6f7fb;
+      --primary-deep: #5145cd;
+      --bg: #f6f3fb;
       --text: #20243a;
       --muted: #9297aa;
       --border: #eceef5;
@@ -30,9 +31,17 @@
       cursor: pointer;
     }
 
+    .hidden {
+      display: none !important;
+    }
+
     .app {
-      display: flex;
+      display: none;
       min-height: 100vh;
+    }
+
+    .app.is-visible {
+      display: flex;
     }
 
     /* Sidebar */
@@ -93,6 +102,15 @@
       border-radius: 10px;
       color: #b9bbd0;
       font-size: 13px;
+      width: 100%;
+      border: 0;
+      background: transparent;
+      text-align: left;
+    }
+
+    .nav-item:hover {
+      background: #2c2e48;
+      color: #fff;
     }
 
     .nav-item.active {
@@ -178,6 +196,36 @@
 
     .primary-btn:hover {
       background: #5950ed;
+    }
+
+    .primary-btn:disabled,
+    .ghost-btn:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .ghost-btn {
+      border: 1px solid #ddd5ff;
+      border-radius: 10px;
+      padding: 10px 16px;
+      background: white;
+      color: var(--primary-deep);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .logout-btn {
+      border: 0;
+      border-radius: 10px;
+      padding: 13px 17px;
+      background: #3a3c58;
+      color: white;
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .logout-btn:hover {
+      background: #4a4c6a;
     }
 
     /* Summary cards */
@@ -594,10 +642,254 @@
       padding: 25px;
     }
 
+    .danger-btn {
+      border: 0;
+      background: #ffedf0;
+      color: var(--red);
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-size: 11px;
+      font-weight: 650;
+    }
+
+    .screen-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      overflow-y: auto;
+      background: #fbfaff;
+      color: #282442;
+    }
+
+    .boot-screen {
+      display: grid;
+      place-items: center;
+      z-index: 60;
+    }
+
+    .boot-card,
+    .auth-card,
+    .setup-card {
+      width: 400px;
+      max-width: 90%;
+      padding: 32px;
+      background: white;
+      border: 1px solid #eeeafa;
+      border-radius: 20px;
+      box-shadow: 0 12px 40px #5145cd12;
+    }
+
+    .boot-card {
+      text-align: center;
+    }
+
+    .auth-screen,
+    .setup-screen {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+
+    .auth-screen.is-visible,
+    .setup-screen.is-visible {
+      display: flex;
+    }
+
+    .landing-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 6%;
+      background: white;
+      border-bottom: 1px solid #eeeafa;
+    }
+
+    .landing-header h2 {
+      margin: 0;
+      color: var(--primary-deep);
+    }
+
+    .landing-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .landing-hero {
+      padding: 55px 7%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 36px;
+      align-items: center;
+    }
+
+    .landing-kicker {
+      color: var(--primary-deep);
+      font-weight: 700;
+      letter-spacing: 1px;
+      font-size: 12px;
+    }
+
+    .landing-hero h1 {
+      font-size: clamp(34px, 5vw, 56px);
+      line-height: 1.12;
+      margin: 15px 0;
+    }
+
+    .landing-hero p {
+      font-size: 17px;
+      line-height: 1.8;
+      color: #6f6a83;
+    }
+
+    .landing-cta {
+      margin-top: 8px;
+      padding: 14px 22px;
+      background: var(--primary-deep);
+      color: white;
+      border: 0;
+      border-radius: 10px;
+      font-size: 15px;
+    }
+
+    .landing-note {
+      color: #77718a;
+      font-size: 12px;
+      margin-top: 12px;
+    }
+
+    .demo-card {
+      padding: 24px;
+      background: white;
+      border: 1px solid #eeeafa;
+      border-radius: 20px;
+      box-shadow: 0 16px 45px #5145cd12;
+    }
+
+    .demo-label {
+      margin-top: 0;
+      color: #77718a;
+      font-size: 12px;
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .demo-tile {
+      padding: 16px;
+      border-radius: 12px;
+    }
+
+    .demo-tile h2 {
+      margin-bottom: 0;
+    }
+
+    .landing-features {
+      padding: 20px 7% 55px;
+      text-align: center;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 16px;
+      margin-top: 25px;
+      text-align: left;
+    }
+
+    .feature-card {
+      padding: 22px;
+      background: white;
+      border: 1px solid #eeeafa;
+      border-radius: 14px;
+    }
+
+    .feature-card p {
+      color: #77718a;
+      line-height: 1.6;
+      margin-top: 8px;
+    }
+
+    .overlay-title {
+      color: var(--primary-deep);
+      margin-top: 0;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .text-input {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 12px;
+      margin: 8px 0 16px;
+      border: 1px solid #ddd6f7;
+      border-radius: 8px;
+      background: white;
+    }
+
+    .full-btn {
+      width: 100%;
+      padding: 13px;
+      background: var(--primary-deep);
+      color: white;
+      border: 0;
+      border-radius: 9px;
+    }
+
+    .status-message {
+      min-height: 1.4em;
+      overflow-wrap: anywhere;
+      font-size: 13px;
+    }
+
+    .status-message.error {
+      color: #c0392b;
+    }
+
+    .link-btn {
+      background: none;
+      border: 0;
+      color: var(--primary-deep);
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .user-email {
+      font-size: 12px;
+      color: #777d92;
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .workspace-meta {
+      font-size: 11px;
+      color: #8d90ab;
+      overflow-wrap: anywhere;
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 20px;
+    }
+
     @media (max-width: 1050px) {
       .sidebar { width: 190px; }
       .main { padding: 25px 22px; }
       .dashboard-grid { grid-template-columns: 1fr; }
+      .landing-hero { grid-template-columns: 1fr; padding: 36px 6%; }
+      .settings-grid { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 720px) {
