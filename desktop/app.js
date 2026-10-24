@@ -57,6 +57,49 @@ let authMode = "login";
 
 const $ = (selector) => document.querySelector(selector);
 
+/* ===== Persistent light/dark theme ===== */
+function applyTheme(theme) {
+  const activeTheme = theme === "dark" ? "dark" : "light";
+  document.documentElement.dataset.theme = activeTheme;
+
+  const toggle = $("#themeToggle");
+  const icon = $("#themeIcon");
+  const text = $("#themeText");
+  const isDark = activeTheme === "dark";
+
+  if (icon) icon.textContent = isDark ? "☀️" : "🌙";
+  if (text) text.textContent = isDark ? "Light mode" : "Dark mode";
+  if (toggle) {
+    toggle.setAttribute(
+      "aria-label",
+      isDark ? "Switch to light mode" : "Switch to dark mode"
+    );
+    toggle.setAttribute(
+      "title",
+      isDark ? "Switch to light mode" : "Switch to dark mode"
+    );
+    toggle.setAttribute("aria-pressed", String(isDark));
+  }
+}
+
+function getSavedTheme() {
+  try {
+    return localStorage.getItem("spendwise-theme") === "dark" ? "dark" : "light";
+  } catch {
+    return "light";
+  }
+}
+
+function saveTheme(theme) {
+  try {
+    localStorage.setItem("spendwise-theme", theme);
+  } catch (error) {
+    console.warn("Could not save theme preference:", error);
+  }
+}
+
+applyTheme(getSavedTheme());
+
 function todayISO() {
   const today = new Date();
   return [
@@ -367,7 +410,7 @@ function renderChart() {
   );
 }
 
-function renderCategoryList(target, items, emptyText) {
+function renderCategoryList(target, items, emptyText, { showShare = false } = {}) {
   const container = $(target);
   container.replaceChildren();
 
@@ -380,6 +423,7 @@ function renderCategoryList(target, items, emptyText) {
   }
 
   const maxAmount = Math.max(...items.map((item) => item.amount), 1);
+  const totalAmount = items.reduce((sum, item) => sum + Number(item.amount || 0), 0);
 
   items.forEach((item) => {
     const row = document.createElement("div");
@@ -392,7 +436,10 @@ function renderCategoryList(target, items, emptyText) {
     name.textContent = `${categoryIcons[item.category] || "📌"} ${categoryLabels[item.category] || item.category}`;
 
     const amount = document.createElement("span");
-    amount.textContent = formatMoney(item.amount);
+    const share = totalAmount > 0 ? (item.amount / totalAmount) * 100 : 0;
+    amount.textContent = showShare
+      ? `${formatMoney(item.amount)} · ${share.toFixed(1)}%`
+      : formatMoney(item.amount);
 
     top.append(name, amount);
 
@@ -400,7 +447,8 @@ function renderCategoryList(target, items, emptyText) {
     progress.className = "progress";
     const fill = document.createElement("div");
     fill.className = "progress-fill";
-    fill.style.width = `${Math.max(4, (item.amount / maxAmount) * 100)}%`;
+    const barValue = showShare ? share : (item.amount / maxAmount) * 100;
+    fill.style.width = `${Math.max(4, barValue)}%`;
     fill.style.background = categoryColors[item.category] || "#6c63ff";
     progress.append(fill);
 
@@ -416,7 +464,7 @@ function renderCategoryDonut(items, total) {
   donutTotal.textContent = formatMoney(total);
 
   if (total <= 0 || items.length === 0) {
-    donut.style.background = "#e9e5ff";
+    donut.style.background = "conic-gradient(var(--donut-empty) 0deg 360deg)";
     donut.setAttribute(
       "aria-label",
       "No expenses recorded this month"
@@ -499,7 +547,8 @@ function renderCategories() {
   renderCategoryList(
     "#categoryList",
     items,
-    "No expenses recorded this month."
+    "No expenses recorded this month.",
+    { showShare: true }
   );
 }
 
@@ -715,6 +764,13 @@ async function deleteTransaction(id) {
     window.alert(friendlyClientError(error, "Could not delete this transaction."));
   }
 }
+
+$("#themeToggle").addEventListener("click", () => {
+  const nextTheme =
+    document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  saveTheme(nextTheme);
+  applyTheme(nextTheme);
+});
 
 $("#todayLabel").textContent = new Date().toLocaleDateString("en-IN", {
   day: "numeric",

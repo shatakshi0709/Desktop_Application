@@ -1071,3 +1071,217 @@
     height: 160px;
   }
 }
+
+/* ===== SpendWise theme + chart improvements ===== */
+
+:root {
+  color-scheme: light;
+  --surface: #ffffff;
+  --surface-alt: #fafaff;
+  --input-bg: #ffffff;
+  --grid-line: #f0f1f7;
+  --donut-empty: #e9e5ff;
+  --text-strong: #35264f;
+  --text-soft: #777d92;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #171421;
+  --text: #f4efff;
+  --muted: #b7aecb;
+  --border: #393149;
+  --surface: #242033;
+  --surface-alt: #2c263d;
+  --input-bg: #2c263d;
+  --grid-line: #393149;
+  --donut-empty: #393149;
+  --text-strong: #f4efff;
+  --text-soft: #b7aecb;
+}
+
+body {
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+.summary-card,
+.panel,
+.transactions-panel,
+.modal-content {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border);
+  transition: background-color 180ms ease, border-color 180ms ease;
+}
+
+.panel-heading p,
+.card-note,
+.spending-total small,
+.category-top span:last-child,
+.chart-legend,
+.chart-months,
+.transactions-header p,
+.date-label,
+.user-email,
+.transaction-sub,
+.donut-center span {
+  color: var(--muted);
+}
+
+.period-select,
+.search,
+.form-group input,
+.form-group select,
+.text-input,
+.secondary-btn {
+  background: var(--input-bg);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+thead {
+  background: var(--surface-alt);
+}
+
+td {
+  border-top-color: var(--border);
+}
+
+.chart {
+  border-bottom-color: var(--border);
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 46px,
+    var(--grid-line) 47px,
+    transparent 48px
+  );
+}
+
+.progress {
+  background: var(--grid-line);
+}
+
+.view-all {
+  background: var(--surface);
+  border-top-color: var(--border);
+  color: var(--primary);
+}
+
+.close-btn {
+  background: var(--surface-alt);
+  color: var(--text);
+}
+
+.report-stat {
+  border-bottom-color: var(--border);
+}
+
+.donut-center {
+  background: var(--surface);
+}
+
+.donut-center strong {
+  color: var(--text-strong);
+}
+
+.category-donut {
+  background: conic-gradient(var(--donut-empty) 0deg 360deg);
+  box-shadow: 0 8px 24px rgba(81, 69, 205, 0.08);
+  transition: background 180ms ease, box-shadow 180ms ease;
+}
+
+.category {
+  padding: 10px 11px;
+  margin-bottom: 8px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.category:hover {
+  background: var(--surface-alt);
+  border-color: var(--border);
+}
+
+.progress-fill {
+  transition: width 220ms ease;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.theme-toggle:hover {
+  border-color: var(--primary);
+  background: var(--surface-alt);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+html[data-theme="dark"] .month-end-balance {
+  background: #30294a;
+}
+
+html[data-theme="dark"] .month-end-balance p,
+html[data-theme="dark"] .month-end-stats span {
+  color: var(--muted);
+}
+
+html[data-theme="dark"] .month-end-balance h2,
+html[data-theme="dark"] .month-end-stats strong {
+  color: var(--text);
+}
+
+html[data-theme="dark"] .month-end-stats > div {
+  border-color: var(--border);
+  background: var(--surface);
+}
+
+html[data-theme="dark"] .tag {
+  background: #393149;
+  color: #d9d0ff;
+}
+
+html[data-theme="dark"] .category-donut {
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.16);
+}
+
+@media (max-width: 900px) {
+  .topbar-right {
+    flex-wrap: wrap;
+  }
+
+  .theme-toggle {
+    padding: 9px 10px;
+  }
+}
+
+@media (max-width: 600px) {
+  .category-breakdown-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .category-donut {
+    width: 160px;
+    height: 160px;
+  }
+
+  .theme-toggle #themeText {
+    display: none;
+  }
+}
