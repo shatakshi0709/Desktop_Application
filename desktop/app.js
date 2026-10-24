@@ -676,30 +676,62 @@ $("#settingsForm").addEventListener("submit", async (event) => {
   const message = $("#settingsMessage");
   const submit = $("#settingsSubmit");
 
+  // Validate the entered amounts
   if (
     !Number.isFinite(openingBalance) ||
     !Number.isFinite(monthlyIncome) ||
     openingBalance < 0 ||
     monthlyIncome < 0
   ) {
-    message.textContent = "Please enter valid, non-negative amounts.";
+    message.textContent =
+      "Please enter valid, non-negative amounts.";
     return;
   }
 
   submit.disabled = true;
-  message.textContent = "Saving...";
+  const originalText = submit.textContent;
+  submit.textContent = "Saving...";
+  message.textContent = "";
 
   try {
-    await window.expenseAPI.saveProfile({ openingBalance, monthlyIncome });
-    userProfile = { openingBalance, monthlyIncome };
-    message.textContent = "Saved.";
+    console.log("Saving profile:", {
+      openingBalance,
+      monthlyIncome
+    });
+
+    const result = await window.expenseAPI.saveProfile({
+      openingBalance,
+      monthlyIncome
+    });
+
+    console.log("Profile save result:", result);
+
+    // Update local profile only after the save succeeds
+    userProfile = {
+      openingBalance,
+      monthlyIncome
+    };
+
+    await window.expenseAPI.ensureCurrentMonthSalary();
+    const saved = await window.expenseAPI.read();
+    transactions = Array.isArray(saved) ? saved : [];
+
+    message.textContent = "Changes saved successfully.";
+
     refreshDashboard();
   } catch (error) {
-    message.textContent = friendlyClientError(error, "Could not save your profile.");
+    console.error("Profile save failed:", error);
+
+    message.textContent = friendlyClientError(
+      error,
+      "Could not save your profile. Please try again."
+    );
   } finally {
     submit.disabled = false;
+    submit.textContent = originalText;
   }
 });
+
 
 $("#expenseForm").addEventListener("submit", async (event) => {
   event.preventDefault();

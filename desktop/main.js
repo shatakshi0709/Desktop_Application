@@ -408,11 +408,6 @@ ipcMain.handle("salary:ensure-current-month", async () => {
 
     const amount = Number(profile.monthly_income);
 
-    // Zero income means there is no salary transaction to create.
-    if (!Number.isFinite(amount) || amount <= 0) {
-      return { success: true, created: false };
-    }
-
     const now = new Date();
     const month = [
       now.getFullYear(),
@@ -433,6 +428,18 @@ ipcMain.handle("salary:ensure-current-month", async () => {
       hash.slice(20, 32)
     ].join("-");
 
+    if (!Number.isFinite(amount) || amount <= 0) {
+      const { error } = await supabase
+        .from("expenses")
+        .delete()
+        .eq("id", id)
+        .eq("user_id", user.id);
+
+      if (error) throw new Error(error.message);
+
+      return { success: true, created: false };
+    }
+
     const { error } = await supabase
       .from("expenses")
       .upsert(
@@ -445,7 +452,7 @@ ipcMain.handle("salary:ensure-current-month", async () => {
           transaction_type: "income",
           expense_date: `${month}-01`
         },
-        { onConflict: "id", ignoreDuplicates: true }
+        { onConflict: "id" }
       );
 
     if (error) throw new Error(error.message);
